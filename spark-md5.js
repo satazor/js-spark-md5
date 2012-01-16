@@ -34,34 +34,39 @@
  *    
  * Hash a file incrementally:
  * 
- *    var fileReader = new FileReader(),
- *        blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice,
- *        file = some_reference_to_a_file_extracted_from_an_input,
- *        chunkSize = 2097152,                           // read in chunks of 2MB
- *        chunks = Math.ceil(file.size / chunkSize),
- *        currentChunk = 0,
- *        spark = new SparkMD5();
- *        
- *    fileReader.onload = function(e) {
- *        console.log("read chunk nr:", chunk);
- *        spark.appendBinary(e.target.result);           // append binary string
- *        currentChunk++;
- *        
- *        if (currentChunk < chunks) {
- *            loadNext();
- *        }
- *        else {
- *           console.log("finished loading");
- *           console.info("computed hash", spark.end()); // compute hash
- *        }
- *    }
- *    
- *    function loadNext() {
- *        var start = currentChunk * chunkSize,
- *            end = start + chunkSize >= file.size ? file.size : start + chunkSize;
- *        
- *        fileReader.readAsBinaryString(blobSlice.call(file, start, end));
- *    }
+ *   document.getElementById("file").addEventListener("change", function() {
+ *
+ *       var fileReader = new FileReader(),
+ *           blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice,
+ *           file = document.getElementById("file").files[0],
+ *           chunkSize = 2097152,                           // read in chunks of 2MB
+ *           chunks = Math.ceil(file.size / chunkSize),
+ *           currentChunk = 0,
+ *           spark = new SparkMD5();
+ *
+ *       fileReader.onload = function(e) {
+ *           console.log("read chunk nr:", currentChunk);
+ *           spark.appendBinary(e.target.result);           // append binary string
+ *           currentChunk++;
+ *
+ *           if (currentChunk < chunks) {
+ *               loadNext();
+ *           }
+ *           else {
+ *              console.log("finished loading");
+ *              console.info("computed hash", spark.end()); // compute hash
+ *           }
+ *       };
+ *
+ *       function loadNext() {
+ *           var start = currentChunk * chunkSize,
+ *               end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+ *
+ *           fileReader.readAsBinaryString(blobSlice.call(file, start, end));
+ *       };
+ *
+ *       loadNext();
+ *   });
  * 
  * @TODO: Add support for byteArrays
  * @TODO: Add support for hmac
