@@ -1,0 +1,60 @@
+SparkMD5 is a fast md5 implementation of the MD5 algorithm.
+This script is based in the JKM md5 library which is the
+fastest algorithm around (see: http://jsperf.com/md5-shootout/2)
+
+Improvements over the JKM md5 library:
+
+- Functionality wrapped in a closure
+- Object oriented library
+- Incremental md5 (see bellow)
+- Validates using jslint
+
+Incremental md5 performs a lot better for hashing large ammounts of data, such as
+files. One could read files in chunks, using the FileReader & Blob's, and append
+each chunk for md5 hashing while keeping memory usage low. See example bellow.
+
+@example
+
+Normal usage:
+
+   var hexHash = SparkMD5.hash('Hi there');       // hex hash
+   var rawHash = SparkMD5.hash('Hi there', true); // raw hash
+
+Incremental usage:
+
+   var spark = new SparkMD5();
+   spark.append('Hi');
+   spark.append(' there');
+   var hexHash = spark.end();                    // hex hash
+   var rawHash = spark.end(true);                // raw hash
+   
+Hash a file incrementally:
+
+   var fileReader = new FileReader(),
+       blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice,
+       file = some_reference_to_a_file_extracted_from_an_input,
+       chunkSize = 2097152,                           // read in chunks of 2MB
+       chunks = Math.ceil(file.size / chunkSize),
+       currentChunk = 0,
+       spark = new SparkMD5();
+       
+   fileReader.onload = function(e) {
+       console.log("read chunk nr:", chunk);
+       spark.appendBinary(e.target.result);           // append binary string
+       currentChunk++;
+       
+       if (currentChunk < chunks) {
+           loadNext();
+       }
+       else {
+          console.log("finished loading");
+          console.info("computed hash", spark.end()); // compute hash
+       }
+   }
+   
+   function loadNext() {
+       var start = currentChunkchunkSize,
+           end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+       
+       fileReader.readAsBinaryString(blobSlice.call(file, start, end));
+   }
