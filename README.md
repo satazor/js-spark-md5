@@ -81,7 +81,6 @@ TODOs:
  * Add support for byteArrays
  * Add support for hmac
  * Add native support for reading files? Maybe add it as an extension?
- * Add suport for AMD
  
 Credits:
 ========================
