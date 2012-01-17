@@ -4,7 +4,7 @@
 /**
  * SparkMD5 is a fast md5 implementation of the MD5 algorithm.
  * This script is based in the JKM md5 library which is the
- * fastest algorithm around (see: http://jsperf.com/md5-shootout/2)
+ * fastest algorithm around (see: http://jsperf.com/md5-shootout/6)
  * 
  * Improvements over the JKM md5 library:
  * 
