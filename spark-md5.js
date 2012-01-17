@@ -45,7 +45,7 @@
  *           spark = new SparkMD5();
  *
  *       fileReader.onload = function(e) {
- *           console.log("read chunk nr:", currentChunk);
+ *           console.log("read chunk nr", currentChunk, " of ", chunks);
  *           spark.appendBinary(e.target.result);           // append binary string
  *           currentChunk++;
  *
