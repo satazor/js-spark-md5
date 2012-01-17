@@ -4,8 +4,11 @@
 /**
  * SparkMD5 is a fast md5 implementation of the MD5 algorithm.
  * This script is based in the JKM md5 library which is the
- * fastest algorithm around (see: http://jsperf.com/md5-shootout/6)
+ * fastest algorithm around (see: http://jsperf.com/md5-shootout/6).
  * 
+ * NOTE: Please disable Firebug while performing the test!
+ *       Firebug consumes a lot of memory and CPU and slows the test by a great margin.
+ *  
  * Improvements over the JKM md5 library:
  * 
  * - Functionality wrapped in a closure
@@ -34,6 +37,10 @@
  *    
  * Hash a file incrementally:
  * 
+ *   NOTE: Please disable Firebug while testing the code bellow (or the file_reader.html test).
+ *         Firebug consumes a lot of memory and CPU and slows the test by a great margin.
+ *         The file_reader.html test MUST BE RUN FROM THE WEBSERVER because browsers can not read files if in file:// protocol.
+ *	  
  *   document.getElementById("file").addEventListener("change", function() {
  *
  *       var fileReader = new FileReader(),
@@ -45,7 +52,7 @@
  *           spark = new SparkMD5();
  *
  *       fileReader.onload = function(e) {
- *           console.log("read chunk nr", currentChunk, " of ", chunks);
+ *           console.log("read chunk nr", currentChunk, "of", chunks);
  *           spark.appendBinary(e.target.result);           // append binary string
  *           currentChunk++;
  *
@@ -68,10 +75,10 @@
  *       loadNext();
  *   });
  * 
- * @TODO: Add support for byteArrays
- * @TODO: Add support for hmac
+ * @TODO: Add support for byteArrays.
+ * @TODO: Add support for HMAC.
  * @TODO: Add native support for reading files? Maybe add it as an extension?
- * @TODO: Add suport for AMD
+ * @TODO: Add suport for AMD.
  */
 var SparkMD5 = (function () {
 
