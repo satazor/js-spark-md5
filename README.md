@@ -1,5 +1,6 @@
 SparkMD5
 ========================
+
 SparkMD5 is a fast md5 implementation of the MD5 algorithm.
 This script is based in the JKM md5 library which is the
 fastest algorithm around (see: http://jsperf.com/md5-shootout/2)
@@ -17,11 +18,13 @@ each chunk for md5 hashing while keeping memory usage low. See example bellow.
 
 Normal usage:
 ========================
+
     var hexHash = SparkMD5.hash('Hi there');       // hex hash
     var rawHash = SparkMD5.hash('Hi there', true); // OR raw hash
 
 Incremental usage:
 ========================
+
     var spark = new SparkMD5();
     spark.append('Hi');
     spark.append(' there');
@@ -30,6 +33,7 @@ Incremental usage:
    
 Hash a file incrementally:
 ========================
+
     document.getElementById("file").addEventListener("change", function() {
 
         var fileReader = new FileReader(),
@@ -66,6 +70,7 @@ Hash a file incrementally:
 
 TODOs:
 ========================
+
  * Add support for byteArrays
  * Add support for hmac
  * Add native support for reading files? Maybe add it as an extension?
@@ -73,4 +78,5 @@ TODOs:
  
 Credits:
 ========================
+
 Joseph Myers (http://www.myersdaily.org/joseph/javascript/md5-text.html)
