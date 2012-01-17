@@ -3,7 +3,7 @@ SparkMD5
 
 SparkMD5 is a fast md5 implementation of the MD5 algorithm.
 This script is based in the JKM md5 library which is the
-fastest algorithm around (see: http://jsperf.com/md5-shootout/4)
+fastest algorithm around (see: http://jsperf.com/md5-shootout/5)
 
 Improvements over the JKM md5 library:
 
@@ -45,7 +45,7 @@ Hash a file incrementally:
             spark = new SparkMD5();
 
         fileReader.onload = function(e) {
-            console.log("read chunk nr:", currentChunk);
+            console.log("read chunk nr", currentChunk, " of ", chunks);
             spark.appendBinary(e.target.result);           // append binary string
             currentChunk++;
 
