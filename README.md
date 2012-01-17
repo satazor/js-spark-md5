@@ -5,6 +5,7 @@ This script is based in the JKM md5 library which is the
 fastest algorithm around (see: http://jsperf.com/md5-shootout/2)
 
 Improvements over the JKM md5 library:
+
  * Functionality wrapped in a closure
  * Object oriented library
  * Incremental md5 (see bellow)
