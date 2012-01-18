@@ -4,7 +4,12 @@
 /**
  * SparkMD5 is a fast md5 implementation of the MD5 algorithm.
  * This script is based in the JKM md5 library which is the
- * fastest algorithm around (see: http://jsperf.com/md5-shootout/6)
+ * fastest algorithm around (see: http://jsperf.com/md5-shootout/6).
+ * 
+ * NOTE: Please disable Firebug while testing this script!
+ *       Firebug consumes a lot of memory and CPU and slows down by a great margin.
+ *       Opera dragon fly also slows down by a great margin.
+ *       Safari/Chrome developer tools seems not to slow it down.
  * 
  * Improvements over the JKM md5 library:
  * 
@@ -34,10 +39,13 @@
  *    
  * Hash a file incrementally:
  * 
+ *   NOTE: If you test the code bellow using the file:// protocol in chrome you must start the browser with -allow-file-access-from-files argument.
+ *         Please see: http://code.google.com/p/chromium/issues/detail?id=60889
+ *   
  *   document.getElementById("file").addEventListener("change", function() {
  *
  *       var fileReader = new FileReader(),
- *           blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice,
+ *           blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice,
  *           file = document.getElementById("file").files[0],
  *           chunkSize = 2097152,                           // read in chunks of 2MB
  *           chunks = Math.ceil(file.size / chunkSize),
@@ -68,8 +76,8 @@
  *       loadNext();
  *   });
  * 
- * @TODO: Add support for byteArrays
- * @TODO: Add support for hmac
+ * @TODO: Add support for byteArrays.
+ * @TODO: Add support for HMAC.
  * @TODO: Add native support for reading files? Maybe add it as an extension?
  */
 define(function () {

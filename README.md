@@ -37,14 +37,13 @@ Incremental usage:
 Hash a file incrementally:
 ========================
 
-    NOTE: Please disable Firebug while testing the code bellow (or the file_reader.html test).
-          Firebug consumes a lot of memory and CPU and slows the test by a great margin.
-	      The file_reader.html test MUST BE RUN FROM THE WEBSERVER because browsers can not read files if in file:// protocol.
+    NOTE: If you test the code bellow using the file:// protocol in chrome you must start the browser with -allow-file-access-from-files argument.
+          Please see: http://code.google.com/p/chromium/issues/detail?id=60889
 
     document.getElementById("file").addEventListener("change", function() {
 
         var fileReader = new FileReader(),
-            blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.Slice,
+            blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice,
             file = document.getElementById("file").files[0],
             chunkSize = 2097152,                           // read in chunks of 2MB
             chunks = Math.ceil(file.size / chunkSize),

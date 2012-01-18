@@ -6,9 +6,11 @@
  * This script is based in the JKM md5 library which is the
  * fastest algorithm around (see: http://jsperf.com/md5-shootout/6).
  * 
- * NOTE: Please disable Firebug while performing the test!
- *       Firebug consumes a lot of memory and CPU and slows the test by a great margin.
- *  
+ * NOTE: Please disable Firebug while testing this script!
+ *       Firebug consumes a lot of memory and CPU and slows down by a great margin.
+ *       Opera Dragonfly also slows down by a great margin.
+ *       Safari/Chrome developer tools seems not to slow it down.
+ * 
  * Improvements over the JKM md5 library:
  * 
  * - Functionality wrapped in a closure
@@ -37,14 +39,13 @@
  *    
  * Hash a file incrementally:
  * 
- *   NOTE: Please disable Firebug while testing the code bellow (or the file_reader.html test).
- *         Firebug consumes a lot of memory and CPU and slows the test by a great margin.
- *         The file_reader.html test MUST BE RUN FROM THE WEBSERVER because browsers can not read files if in file:// protocol.
- *	  
+ *   NOTE: If you test the code bellow using the file:// protocol in chrome you must start the browser with -allow-file-access-from-files argument.
+ *         Please see: http://code.google.com/p/chromium/issues/detail?id=60889
+ *
  *   document.getElementById("file").addEventListener("change", function() {
  *
  *       var fileReader = new FileReader(),
- *           blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice,
+ *           blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice,
  *           file = document.getElementById("file").files[0],
  *           chunkSize = 2097152,                           // read in chunks of 2MB
  *           chunks = Math.ceil(file.size / chunkSize),
@@ -78,7 +79,6 @@
  * @TODO: Add support for byteArrays.
  * @TODO: Add support for HMAC.
  * @TODO: Add native support for reading files? Maybe add it as an extension?
- * @TODO: Add suport for AMD.
  */
 var SparkMD5 = (function () {
 
