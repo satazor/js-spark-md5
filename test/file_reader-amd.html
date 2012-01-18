@@ -63,7 +63,7 @@
 
                         if (running) return;
                         if (input.files.length == 0) {
-                            registerLog("<br/><strong>Please select a file.</strong>");
+                            registerLog("<strong>Please select a file.</strong><br/>");
                             return;
                         }
 
@@ -73,10 +73,18 @@
                             chunks = Math.ceil(file.size / chunkSize),
                             currentChunk = 0,
                             spark = new SparkMD5(),
-                            time;
+                            time,
+                            uniqueId = "chunk_" + (new Date().getTime()),
+                            chunkId = null;
 
                         fileReader.onload = function(e) {
-                            registerLog("Read chunk number <strong>" + (currentChunk + 1) + "</strong> of <strong>" + chunks + "</strong><br/>");
+
+                            if (currentChunk == 0) registerLog("Read chunk number <strong id=\"" + uniqueId + "\">" + (currentChunk + 1) + "</strong> of <strong>" + chunks + "</strong><br/>");
+                            else {
+                                if (chunkId === null) chunkId = document.id(uniqueId);
+                                chunkId.innerHTML = currentChunk + 1;
+                            }
+
                             spark.appendBinary(e.target.result);           // append binary string
                             currentChunk++;
 
@@ -113,7 +121,7 @@
 
                         if (running) return;
                         if (input.files.length == 0) {
-                            registerLog("<strong>Please select a file.</strong><br/>");
+                            registerLog("<br/><strong>Please select a file.</strong>");
                             return;
                         }
 
