@@ -10,16 +10,21 @@
         <h1>SparkMD5 file reader test, incremental and normal md5</h1>
         
         <h4>Please note that the advantage of doing an incremental md5 is to keep memory usage low.</h4>
-        <p>When you select a file, an incremental md5 and normal md5 will be done. Keep an eye on the memory usage of your browser. If you got chrome, open about:memory to see all the browsers memory usage (you must refresh continuously). You should observe stable memory usage and slightly higher load times in incremental md5.</p>
+        <p>Keep an eye on the memory usage of your browser. If you got chrome, open about:memory to see all the browsers memory usage (you must refresh continuously).<br/>With incremental md5, you should observe stable memory usage but slightly higher times.<br/>With normal md5, you should observe slightly faster times but high memory usage (because the file need to be read into a binary string).</p>
         
         <input type="file" id="file"/>
+        <input type="button" id="normal" value="Normal"/>
+        <input type="button" id="incremental" value="Incremental"/>
+        
         <div id="log"></div>
         
         <script type="text/javascript">
             
             var blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice,
-                log = document.id("log");
-                
+                log = document.id("log"),
+                input = document.id("file"),
+                running = false;
+            
             function registerLog(str) {
                 new Element("div", { html: str }).inject(log);
             }
@@ -42,11 +47,16 @@
                     registerLog("<p><strong>If you got DragonFly open please consider closing it as it slows down the test by a great margin.<strong></p>");
                 }
                 
-                // listen to file input change
-                document.id("file").addEvent("change", function() {
-
+                function doIncrementalTest() {
+                    
+                    if (running) return;
+                    if (input.files.length == 0) {
+                        registerLog("<br/><strong>Please select a file.</strong>");
+                        return;
+                    }
+                    
                     var fileReader = new FileReader(),
-                        file = document.getElementById("file").files[0],
+                        file = input.files[0],
                         chunkSize = 2097152,                           // read in chunks of 2MB
                         chunks = Math.ceil(file.size / chunkSize),
                         currentChunk = 0,
@@ -62,15 +72,15 @@
                             loadNext();
                         }
                         else {
+                            running = false;
                             registerLog("<strong>Finished loading!</strong><br/>")
                             registerLog("<strong>Computed hash:</strong> " + spark.end() + "<br/>"); // compute hash
                             registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>");
-                           
-                            doNormalTest();
                         }
                     };
 
                     fileReader.onerror = function() {
+                        running = false;
                         registerLog("<strong>Oops, something went wrong.</strong>");
                     };
 
@@ -81,25 +91,45 @@
                         fileReader.readAsBinaryString(blobSlice.call(file, start, end));
                     };
 
+                    running = true;
                     registerLog("<p></p><strong>Starting incremental test (" + file.name + ")</strong><br/>")
                     time = new Date().getTime();
                     loadNext();
+                }
                     
-                    function doNormalTest() {
-                        
-                        fileReader.onload = function(e) {
-                            
-                           registerLog("<strong>Finished loading!</strong><br/>")
-                           registerLog("<strong>Computed hash:</strong> " + SparkMD5.hashBinary(e.target.result) + "<br/>"); // compute hash
-                           registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms");
-                        }
-                        
-                        registerLog("<br/><strong>Starting normal test (" + file.name + ")</strong><br/>")
-                        time = new Date().getTime();
-                        fileReader.readAsBinaryString(file);
+                function doNormalTest() {
+                    
+                    if (running) return;
+                    if (input.files.length == 0) {
+                        registerLog("<br/><strong>Please select a file.</strong>");
+                        return;
                     }
-                });
+                    
+                    var fileReader = new FileReader(),
+                        file = input.files[0],
+                        time;
+                        
+                    fileReader.onload = function(e) {
+                        running = false;
+                        registerLog("<strong>Finished loading!</strong><br/>")
+                        registerLog("<strong>Computed hash:</strong> " + SparkMD5.hashBinary(e.target.result) + "<br/>"); // compute hash
+                        registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms");
+                    }
+
+                    fileReader.onerror = function() {
+                        running = false;
+                        registerLog("<strong>Oops, something went wrong.</strong>");
+                    };
+                    
+                    running = true;
+                    registerLog("<br/><strong>Starting normal test (" + file.name + ")</strong><br/>")
+                    time = new Date().getTime();
+                    fileReader.readAsBinaryString(file);
+                }
             }
+                  
+            document.id("normal").addEvent("click", doNormalTest);
+            document.id("incremental").addEvent("click", doIncrementalTest);
         </script>
     </body>
 </html>
