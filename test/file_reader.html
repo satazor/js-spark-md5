@@ -10,7 +10,11 @@
         <h1>SparkMD5 file reader test, incremental and normal md5</h1>
         
         <h4>Please note that the advantage of doing an incremental md5 is to keep memory usage low.</h4>
-        <p>Keep an eye on the memory usage of your browser. If you got chrome, open about:memory to see all the browsers memory usage (you must refresh continuously).<br/>With incremental md5, you should observe stable memory usage but slightly higher times.<br/>With normal md5, you should observe slightly faster times but high memory usage (because the file need to be read into a binary string).</p>
+        <p>
+            Keep an eye on the memory usage of your browser. If you got chrome, open about:memory to see all the browsers memory usage (you must refresh continuously).
+            <br/>With normal md5, you should observe slightly faster times but high memory usage (because the file need to be read into a binary string).
+            <br/>With incremental md5, you should observe stable memory usage but slightly higher times.
+        </p>
         
         <input type="file" id="file"/>
         <input type="button" id="normal" value="Normal"/>
