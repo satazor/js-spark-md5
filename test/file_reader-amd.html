@@ -4,9 +4,14 @@
         <title>SparkMD5 file reader test</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="http://requirejs.org/docs/release/1.0.4/minified/require.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/mootools/1.4.2/mootools-yui-compressed.js" type="text/javascript"></script>
     </head>
     <body>
-
+        <h1>SparkMD5 file reader test, incremental and normal md5</h1>
+        
+        <h4>Please note that the advantage of doing an incremental md5 is to keep memory usage low.</h4>
+        <p>When you select a file, an incremental md5 and normal md5 will be done. Keep an eye on the memory usage of your browser. If you got chrome, open about:memory to see all the browsers memory usage (you must refresh continuously). You should observe stable memory usage and slightly higher load times in incremental md5.</p>
+        
         <input type="file" id="file"/>
         <div id="log"></div>
         
@@ -21,40 +26,43 @@
             require(['spark-md5.amd'], function(SparkMD5){
                 
                 var blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice,
-                    log = document.getElementById("log"),
-                    userAgent = navigator.userAgent.toLowerCase();
+                    log = document.id("log");
+
+                function registerLog(str) {
+                    new Element("div", { html: str }).inject(log);
+                }
 
                 if (!("FileReader" in window) || !("File" in window) || !blobSlice) {
-                    log.innerHTML += "<p><strong>Your browser does not support the FileAPI or slicing of files.</strong></p>";		
+                    registerLog("<p><strong>Your browser does not support the FileAPI or slicing of files.</strong></p>");		
                 }
                 else {
 
-                    if (userAgent.indexOf("chrome") > -1) {
+                    if (Browser.chrome) {
                         if ((location.protocol === 'file:' || location.href.indexOf('://localhost') !== -1)) {
-                            log.innerHTML += "<p><strong>This example will only work in chrome (in file:// protocol) if you start it up with -allow-file-access-from-files argument.</strong><br/>This is a security measure introduced in chrome, please <a target=\"_blank\" href=\"http://code.google.com/p/chromium/issues/detail?id=60889\">see</a>.</p>";
+                            registerLog("<p><strong>This example will only work in chrome (in file:// protocol) if you start it up with -allow-file-access-from-files argument.</strong><br/>This is a security measure introduced in chrome, please <a target=\"_blank\" href=\"http://code.google.com/p/chromium/issues/detail?id=60889\">see</a>.</p>");
                         }
                     }
-                    else if (userAgent.indexOf("firefox")) {
+                    else if (Browser.firefox) {
                         var firebugEnabled = !!(window.console && (window.console.firebug || (console.exception && console.table && console.memoryProfile && console.memoryProfileEnd)));
-                        if (firebugEnabled) log.innerHTML += "<p><strong>It seems you got firebug enabled.</strong><br/>Firebug slows down this script by a great margin and causes high memory/cpu usage, please disable it and use the built in web console instead.</p>";
+                        if (firebugEnabled) registerLog("<p><strong>It seems you got firebug enabled.</strong><br/>Firebug slows down this script by a great margin and causes high memory/cpu usage, please disable it and use the built in web console instead.</p>");
                     }
-                    else if (userAgent.indexOf("opera")) {
-                        log.innerHTML += "<p><strong>If you got DragonFly open please consider closing it as it slows down the test by a great margin.<strong></p>";
+                    else if (Browser.opera) {
+                        registerLog("<p><strong>If you got DragonFly open please consider closing it as it slows down the test by a great margin.<strong></p>");
                     }
-                    else log.innerHTML += "<p></p>";
 
                     // listen to file input change
-                    document.getElementById("file").addEventListener("change", function() {
+                    document.id("file").addEvent("change", function() {
 
                         var fileReader = new FileReader(),
                             file = document.getElementById("file").files[0],
                             chunkSize = 2097152,                           // read in chunks of 2MB
                             chunks = Math.ceil(file.size / chunkSize),
                             currentChunk = 0,
-                            spark = new SparkMD5();
+                            spark = new SparkMD5(),
+                            time;
 
                         fileReader.onload = function(e) {
-                            log.innerHTML += "Read chunk number <strong>" + (currentChunk + 1) + "</strong> of <strong>" + chunks + "</strong><br/>";
+                            registerLog("Read chunk number <strong>" + (currentChunk + 1) + "</strong> of <strong>" + chunks + "</strong><br/>");
                             spark.appendBinary(e.target.result);           // append binary string
                             currentChunk++;
 
@@ -62,13 +70,16 @@
                                 loadNext();
                             }
                             else {
-                               log.innerHTML += "<strong>Finished loading!</strong><br/>"
-                               log.innerHTML += "<strong>Computed hash: " + spark.end() + "</strong>"; // compute hash
+                                registerLog("<strong>Finished loading!</strong><br/>")
+                                registerLog("<strong>Computed hash:</strong> " + spark.end() + "<br/>"); // compute hash
+                                registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>");
+
+                                doNormalTest();
                             }
                         };
 
                         fileReader.onerror = function() {
-                            log.innerHTML += "<strong>Oops, something went wrong.</strong>";
+                            registerLog("<strong>Oops, something went wrong.</strong>");
                         };
 
                         function loadNext() {
@@ -78,8 +89,23 @@
                             fileReader.readAsBinaryString(blobSlice.call(file, start, end));
                         };
 
-                        log.innerHTML += "<strong>Starting..</strong><br/>"
+                        registerLog("<p></p><strong>Starting incremental test (" + file.name + ")</strong><br/>")
+                        time = new Date().getTime();
                         loadNext();
+
+                        function doNormalTest() {
+
+                            fileReader.onload = function(e) {
+
+                               registerLog("<strong>Finished loading!</strong><br/>")
+                               registerLog("<strong>Computed hash:</strong> " + SparkMD5.hashBinary(e.target.result) + "<br/>"); // compute hash
+                               registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms");
+                            }
+
+                            registerLog("<br/><strong>Starting normal test (" + file.name + ")</strong><br/>")
+                            time = new Date().getTime();
+                            fileReader.readAsBinaryString(file);
+                        }
                     });
                 }
             });
