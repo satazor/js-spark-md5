@@ -52,7 +52,7 @@
                         if (firebugEnabled) registerLog("<p><strong>It seems you got firebug enabled.</strong><br/>Firebug slows down this script by a great margin and causes high memory/cpu usage, please disable it and use the built in web console instead.</p>");
                     }
                     else if (Browser.opera) {
-                        registerLog("<p><strong>If you got DragonFly open please consider closing it as it slows down the test by a great margin.<strong></p>");
+                        registerLog("<p><strong>If you got DragonFly open please consider closing it as it slows down the test by a great margin.</strong></p>");
                     }
 
                     function doIncrementalTest() {
@@ -109,7 +109,7 @@
 
                         if (running) return;
                         if (input.files.length == 0) {
-                            registerLog("<br/><strong>Please select a file.</strong>");
+                            registerLog("<strong>Please select a file.</strong><br/>");
                             return;
                         }
 
@@ -121,7 +121,7 @@
                             running = false;
                             registerLog("<strong>Finished loading!</strong><br/>")
                             registerLog("<strong>Computed hash:</strong> " + SparkMD5.hashBinary(e.target.result) + "<br/>"); // compute hash
-                            registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms");
+                            registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>");
                         }
 
                         fileReader.onerror = function() {
