@@ -8,7 +8,7 @@
  * 
  * NOTE: Please disable Firebug while testing this script!
  *       Firebug consumes a lot of memory and CPU and slows down by a great margin.
- *       Opera dragon fly also slows down by a great margin.
+ *       Opera Dragonfly also slows down by a great margin.
  *       Safari/Chrome developer tools seems not to slow it down.
  * 
  * Improvements over the JKM md5 library:
@@ -41,7 +41,7 @@
  * 
  *   NOTE: If you test the code bellow using the file:// protocol in chrome you must start the browser with -allow-file-access-from-files argument.
  *         Please see: http://code.google.com/p/chromium/issues/detail?id=60889
- *   
+ *
  *   document.getElementById("file").addEventListener("change", function() {
  *
  *       var fileReader = new FileReader(),
@@ -53,7 +53,7 @@
  *           spark = new SparkMD5();
  *
  *       fileReader.onload = function(e) {
- *           console.log("read chunk nr", currentChunk, " of ", chunks);
+ *           console.log("read chunk nr", currentChunk + 1, "of", chunks);
  *           spark.appendBinary(e.target.result);           // append binary string
  *           currentChunk++;
  *
@@ -235,7 +235,7 @@ define(function () {
             i,
             length,
             tail;
-        for (i = 64; i <= s.length; i += 64) {
+        for (i = 64; i <= n; i += 64) {
             md5cycle(state, md5blk(s.substring(i - 64, i)));
         }
         s = s.substring(i - 64);
@@ -312,8 +312,8 @@ define(function () {
         this.append = function (str) {
 
             // converts the string to utf8 bytes if necessary
-            if (/[\x80-\xFF]/.test(str)) {
-                str = unescape(encodeURIComponent(str)); // converted to utf8
+            if (/[\u0080-\uFFFF]/.test(str)) {
+                str = unescape(encodeURIComponent(str));
             }
 
             // then append as binary
@@ -334,22 +334,28 @@ define(function () {
             // add to the buffer and increment string total length
             var offset = 64 - this._buff.length,
                 sub = this._buff + contents.substr(0, offset),
-                total = contents.length - 64;
+                length = contents.length,
+                total;
 
-            this._length += contents.length;
+            this._length += length;
 
-            if (sub.length >= 64) {
+            if (sub.length >= 64) { // if there is 64 bytes accumulated
 
                 md5cycle(this._state, md5blk(sub));
 
+                total = contents.length - 64;
+
                 // while we got bytes to process
-                while (offset < total) {
+                while (offset <= total) {
                     sub = contents.substr(offset, 64);
                     md5cycle(this._state, md5blk(sub));
                     offset += 64;
                 }
 
                 this._buff = contents.substr(offset, 64);
+
+            } else {
+                this._buff = sub;
             }
 
             return this;
@@ -433,8 +439,8 @@ define(function () {
     SparkMD5.hash = function (str, raw) {
 
         // converts the string to utf8 bytes if necessary
-        if (/[\x80-\xFF]/.test(str)) {
-            str = unescape(encodeURIComponent(str)); // converted to utf8
+        if (/[\u0080-\uFFFF]/.test(str)) {
+            str = unescape(encodeURIComponent(str));
         }
 
         var hash = md51(str);
