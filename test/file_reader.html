@@ -5,8 +5,15 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <script src="../spark-md5.js" type="text/javascript"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/mootools/1.4.2/mootools-yui-compressed.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css">
+        <style type="text/css" media="screen">
+            .input-file {
+                padding: 5px;
+                margin-right: 25px;
+            }
+        </style>
     </head>
-    <body>
+    <body class="container">
         <h1>SparkMD5 file reader test, incremental and normal md5</h1>
         
         <h4>Please note that the advantage of doing an incremental md5 is to keep memory usage low.</h4>
@@ -17,10 +24,11 @@
             <br/>Be aware that while using normal md5, the browser can crash due to high memory usage.
         </p>
         
-        <input type="file" id="file"/>
-        <input type="button" id="normal" value="Normal"/>
-        <input type="button" id="incremental" value="Incremental"/>
-        
+        <div class="actions">
+            <input type="file" id="file" class="input-file span5"/>
+            <input type="button" id="normal" value="Normal" class="btn primary"/>
+            <input type="button" id="incremental" value="Incremental" class="btn primary"/>
+        </div>
         <div id="log"></div>
         
         <script type="text/javascript">
@@ -30,12 +38,12 @@
                 input = document.id("file"),
                 running = false;
             
-            function registerLog(str) {
-                new Element("div", { html: str }).inject(log);
+            function registerLog(str, className) {
+                new Element("div", { html: str, 'class': 'alert-message ' + className }).inject(log);
             }
             
             if (!("FileReader" in window) || !("File" in window) || !blobSlice) {
-                registerLog("<p><strong>Your browser does not support the FileAPI or slicing of files.</strong></p>");		
+                registerLog("<p><strong>Your browser does not support the FileAPI or slicing of files.</strong></p>", 'error');		
             }
             else {
                 
@@ -72,7 +80,7 @@
                     
                     fileReader.onload = function(e) {
                         
-                        if (currentChunk == 0) registerLog("Read chunk number <strong id=\"" + uniqueId + "\">" + (currentChunk + 1) + "</strong> of <strong>" + chunks + "</strong><br/>");
+                        if (currentChunk == 0) registerLog("Read chunk number <strong id=\"" + uniqueId + "\">" + (currentChunk + 1) + "</strong> of <strong>" + chunks + "</strong><br/>", 'info');
                         else {
                             if (chunkId === null) chunkId = document.id(uniqueId);
                             chunkId.innerHTML = currentChunk + 1;
@@ -86,15 +94,15 @@
                         }
                         else {
                             running = false;
-                            registerLog("<strong>Finished loading!</strong><br/>");
-                            registerLog("<strong>Computed hash:</strong> " + spark.end() + "<br/>"); // compute hash
-                            registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>");
+                            registerLog("<strong>Finished loading!</strong><br/>", 'success');
+                            registerLog("<strong>Computed hash:</strong> " + spark.end() + "<br/>", 'success'); // compute hash
+                            registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>", 'success');
                         }
                     };
 
                     fileReader.onerror = function() {
                         running = false;
-                        registerLog("<strong>Oops, something went wrong.</strong>");
+                        registerLog("<strong>Oops, something went wrong.</strong>", 'error');
                     };
 
                     function loadNext() {
@@ -105,7 +113,7 @@
                     };
 
                     running = true;
-                    registerLog("<p></p><strong>Starting incremental test (" + file.name + ")</strong><br/>");
+                    registerLog("<p></p><strong>Starting incremental test (" + file.name + ")</strong><br/>", 'info');
                     time = new Date().getTime();
                     loadNext();
                 }
@@ -127,22 +135,22 @@
                         running = false;
                         
                         if (file.size != e.target.result.length) {
-                            registerLog("<strong>ERROR:</strong> Browser reported success but could not read the file until the end.<br/>");
+                            registerLog("<strong>ERROR:</strong> Browser reported success but could not read the file until the end.<br/>", 'error');
                         }
                         else {
-                            registerLog("<strong>Finished loading!</strong><br/>");
-                            registerLog("<strong>Computed hash:</strong> " + SparkMD5.hashBinary(e.target.result) + "<br/>"); // compute hash
-                            registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>");
+                            registerLog("<strong>Finished loading!</strong><br/>", 'success');
+                            registerLog("<strong>Computed hash:</strong> " + SparkMD5.hashBinary(e.target.result) + "<br/>", 'success'); // compute hash
+                            registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>", 'success');
                         }
                     };
 
                     fileReader.onerror = function(e) {
                         running = false;
-                        registerLog("<strong>ERROR:</strong> FileReader onerror was triggered, maybe the browser aborted due to high memory usage.<br/>");
+                        registerLog("<strong>ERROR:</strong> FileReader onerror was triggered, maybe the browser aborted due to high memory usage.<br/>", 'error');
                     };
                     
                     running = true;
-                    registerLog("<br/><strong>Starting normal test (" + file.name + ")</strong><br/>");
+                    registerLog("<strong>Starting normal test (" + file.name + ")</strong><br/>", 'info');
                     time = new Date().getTime();
                     fileReader.readAsBinaryString(file);
                 }
