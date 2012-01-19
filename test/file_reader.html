@@ -12,8 +12,9 @@
         <h4>Please note that the advantage of doing an incremental md5 is to keep memory usage low.</h4>
         <p>
             Keep an eye on the memory usage of your browser. If you got chrome, open about:memory to see all the browsers memory usage (you must refresh continuously).
-            <br/>With normal md5, you should observe slightly faster times but high memory usage (because the file need to be read into a binary string).
+            <br/>With normal md5, you should observe slightly faster times but high memory usage (because the entire file need to be read into a binary string).
             <br/>With incremental md5, you should observe stable memory usage but slightly higher times.
+            <br/>Be aware that while using normal md5, the browser can crash due to high memory usage.
         </p>
         
         <input type="file" id="file"/>
@@ -85,7 +86,7 @@
                         }
                         else {
                             running = false;
-                            registerLog("<strong>Finished loading!</strong><br/>")
+                            registerLog("<strong>Finished loading!</strong><br/>");
                             registerLog("<strong>Computed hash:</strong> " + spark.end() + "<br/>"); // compute hash
                             registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>");
                         }
@@ -104,7 +105,7 @@
                     };
 
                     running = true;
-                    registerLog("<p></p><strong>Starting incremental test (" + file.name + ")</strong><br/>")
+                    registerLog("<p></p><strong>Starting incremental test (" + file.name + ")</strong><br/>");
                     time = new Date().getTime();
                     loadNext();
                 }
@@ -122,19 +123,26 @@
                         time;
                         
                     fileReader.onload = function(e) {
+                        
                         running = false;
-                        registerLog("<strong>Finished loading!</strong><br/>")
-                        registerLog("<strong>Computed hash:</strong> " + SparkMD5.hashBinary(e.target.result) + "<br/>"); // compute hash
-                        registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>");
-                    }
+                        
+                        if (file.size != e.target.result.length) {
+                            registerLog("<strong>ERROR:</strong> Browser reported success but could not read the file until the end.<br/>");
+                        }
+                        else {
+                            registerLog("<strong>Finished loading!</strong><br/>");
+                            registerLog("<strong>Computed hash:</strong> " + SparkMD5.hashBinary(e.target.result) + "<br/>"); // compute hash
+                            registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>");
+                        }
+                    };
 
-                    fileReader.onerror = function() {
+                    fileReader.onerror = function(e) {
                         running = false;
-                        registerLog("<strong>Oops, something went wrong.</strong>");
+                        registerLog("<strong>ERROR:</strong> FileReader onerror was triggered, maybe the browser aborted due to high memory usage.<br/>");
                     };
                     
                     running = true;
-                    registerLog("<br/><strong>Starting normal test (" + file.name + ")</strong><br/>")
+                    registerLog("<br/><strong>Starting normal test (" + file.name + ")</strong><br/>");
                     time = new Date().getTime();
                     fileReader.readAsBinaryString(file);
                 }
