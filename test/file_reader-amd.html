@@ -28,6 +28,7 @@
             <input type="file" id="file" class="input-file span5"/>
             <input type="button" id="normal" value="Normal" class="btn primary"/>
             <input type="button" id="incremental" value="Incremental" class="btn primary"/>
+            <input type="button" id="clear" value="Clear" class="btn"/>
         </div>
         <div id="log"></div>
     
@@ -164,10 +165,15 @@
                         time = new Date().getTime();
                         fileReader.readAsBinaryString(file);
                     }
+                    
+                    function clearLog() {
+                        log.getChildren().destroy();
+                    }
                 }
-                  
+                
                 document.id("normal").addEvent("click", doNormalTest);
                 document.id("incremental").addEvent("click", doIncrementalTest);
+                document.id("clear").addEvent("click", clearLog);
             });
         </script>
     </body>
