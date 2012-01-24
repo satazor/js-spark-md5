@@ -399,7 +399,7 @@ var SparkMD5 = (function () {
         };
 
         /**
-          * Resets the internal state of the computing.
+          * Resets the internal state of the computation.
           * 
           * @return {SparkMD5} The instance itself
           */
