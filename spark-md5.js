@@ -79,6 +79,7 @@
  * @TODO: Add support for byteArrays.
  * @TODO: Add support for HMAC.
  * @TODO: Add native support for reading files? Maybe add it as an extension?
+ * @TODO: Add simpler support for CommonJS modules and AMD as Classify does.
  */
 var SparkMD5 = (function () {
 
