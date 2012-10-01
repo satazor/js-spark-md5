@@ -5,40 +5,40 @@
  * SparkMD5 is a fast md5 implementation of the MD5 algorithm.
  * This script is based in the JKM md5 library which is the
  * fastest algorithm around (see: http://jsperf.com/md5-shootout/7).
- * 
+ *
  * NOTE: Please disable Firebug while testing this script!
  *       Firebug consumes a lot of memory and CPU and slows down by a great margin.
  *       Opera Dragonfly also slows down by a great margin.
  *       Safari/Chrome developer tools seems not to slow it down.
- * 
+ *
  * Improvements over the JKM md5 library:
- * 
+ *
  * - Functionality wrapped in a closure
  * - Object oriented library
  * - Incremental md5 (see bellow)
  * - Validates using jslint
- * 
+ *
  * Incremental md5 performs a lot better for hashing large ammounts of data, such as
  * files. One could read files in chunks, using the FileReader & Blob's, and append
  * each chunk for md5 hashing while keeping memory usage low. See example bellow.
- * 
+ *
  * @example
- * 
+ *
  * Normal usage:
- * 
+ *
  *    var hexHash = SparkMD5.hash('Hi there');       // hex hash
  *    var rawHash = SparkMD5.hash('Hi there', true); // raw hash
- * 
+ *
  * Incremental usage:
- * 
+ *
  *    var spark = new SparkMD5();
  *    spark.append('Hi');
  *    spark.append(' there');
  *    var hexHash = spark.end();                    // hex hash
  *    var rawHash = spark.end(true);                // raw hash
- *    
+ *
  * Hash a file incrementally:
- * 
+ *
  *   NOTE: If you test the code bellow using the file:// protocol in chrome you must start the browser with -allow-file-access-from-files argument.
  *         Please see: http://code.google.com/p/chromium/issues/detail?id=60889
  *
@@ -75,7 +75,7 @@
  *
  *       loadNext();
  *   });
- * 
+ *
  * @TODO: Add support for byteArrays.
  * @TODO: Add support for HMAC.
  * @TODO: Add native support for reading files? Maybe add it as an extension?
@@ -100,7 +100,7 @@
     /*
      * Fastest md5 implementation around (JKM md5)
      * Credits: Joseph Myers
-     * 
+     *
      * @see http://www.myersdaily.org/joseph/javascript/md5-text.html
      * @see http://jsperf.com/md5-shootout/7
      */
@@ -304,151 +304,144 @@
 
     /**
      * SparkMD5 OOP implementation.
-     * 
+     *
      * Use this class to perform an incremental md5, otherwise use the
      * static methods instead.
      */
     /*jslint vars: true*/
     var SparkMD5 = function () {
         /*jslint vars: false*/
-
-        /**
-         * Appends a string.
-         * A conversion will be applied if an utf8 string is detected.
-         * 
-         * @param {String} str The string to be appended
-         * 
-         * @return {SparkMD5} The instance itself
-         */
-        this.append = function (str) {
-
-            // converts the string to utf8 bytes if necessary
-            if (/[\u0080-\uFFFF]/.test(str)) {
-                str = unescape(encodeURIComponent(str));
-            }
-
-            // then append as binary
-            this.appendBinary(str);
-
-            return this;
-        };
-
-        /**
-          * Appends a binary string.
-          * 
-          * @param {String} contents The binary string to be appended
-          * 
-          * @return {SparkMD5} The instance itself
-          */
-        this.appendBinary = function (contents) {
-
-            // add to the buffer and increment string total length
-            var offset = 64 - this._buff.length,
-                sub = this._buff + contents.substr(0, offset),
-                length = contents.length,
-                total;
-
-            this._length += length;
-
-            if (sub.length >= 64) { // if there is 64 bytes accumulated
-
-                md5cycle(this._state, md5blk(sub));
-
-                total = contents.length - 64;
-
-                // while we got bytes to process
-                while (offset <= total) {
-                    sub = contents.substr(offset, 64);
-                    md5cycle(this._state, md5blk(sub));
-                    offset += 64;
-                }
-
-                this._buff = contents.substr(offset, 64);
-
-            } else {
-                this._buff = sub;
-            }
-
-            return this;
-        };
-
-        /**
-          * Finishes the incremental computation, reseting the internal state and
-          * returning the result.
-          * Use the raw parameter to obtain the raw result instead of the hex one.
-          * 
-          * @param {Boolean} raw True to get the raw result, false to get the hex result
-          * 
-          * @return {String|Array} The result
-          */
-        this.end = function (raw) {
-
-            var buff = this._buff,
-                length = buff.length,
-                tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                i,
-                ret;
-
-            for (i = 0; i < length; i += 1) {
-                tail[i >> 2] |= buff.charCodeAt(i) << ((i % 4) << 3);
-            }
-            tail[i >> 2] |= 0x80 << ((i % 4) << 3);
-            if (i > 55) {
-                md5cycle(this._state, tail);
-                for (i = 0; i < 16; i += 1) {
-                    tail[i] = 0;
-                }
-            }
-            tail[14] = this._length * 8;
-            md5cycle(this._state, tail);
-
-            ret = !!raw ? this._state : hex(this._state);
-
-            this.reset();
-
-            return ret;
-        };
-
-        /**
-          * Resets the internal state of the computation.
-          * 
-          * @return {SparkMD5} The instance itself
-          */
-        this.reset = function () {
-
-            this._buff = "";
-            this._length = 0;
-            this._state = [1732584193, -271733879, -1732584194, 271733878];
-
-            return this;
-        };
-
-        /**
-          * Releases memory used by the incremental buffer and other aditional
-          * resources. If you plan to use the instance again, use reset instead.
-          */
-        this.destroy = function () {
-
-            delete this._state;
-            delete this._buff;
-            delete this._length;
-        };
-
         // call reset to init the instance
         this.reset();
     };
 
     /**
-      * Performs the md5 hash on a string.
-      * A conversion will be applied if utf8 string is detected.
-      * 
-      * @param {String}  str The string
-      * @param {Boolean} raw True to get the raw result, false to get the hex result
-      * 
-      * @return {String|Array} The result
-      */
-    SparkMD5.hash = function (str, raw) {
+     * Appends a string.
+     * A conversion will be applied if an utf8 string is detected.
+     *
+     * @param {String} str The string to be appended
+     *
+     * @return {SparkMD5} The instance itself
+     */
+    SparkMD5.prototype.append = function (str) {
+        // converts the string to utf8 bytes if necessary
+        if (/[\u0080-\uFFFF]/.test(str)) {
+            str = unescape(encodeURIComponent(str));
+        }
 
+        // then append as binary
+        this.appendBinary(str);
+
+        return this;
+    };
+
+    /**
+     * Appends a binary string.
+     *
+     * @param {String} contents The binary string to be appended
+     *
+     * @return {SparkMD5} The instance itself
+     */
+    SparkMD5.prototype.appendBinary = function (contents) {
+        // add to the buffer and increment string total length
+        var offset = 64 - this._buff.length,
+            sub = this._buff + contents.substr(0, offset),
+            length = contents.length,
+            total;
+
+        this._length += length;
+
+        if (sub.length >= 64) { // if there is 64 bytes accumulated
+
+            md5cycle(this._state, md5blk(sub));
+
+            total = contents.length - 64;
+
+            // while we got bytes to process
+            while (offset <= total) {
+                sub = contents.substr(offset, 64);
+                md5cycle(this._state, md5blk(sub));
+                offset += 64;
+            }
+
+            this._buff = contents.substr(offset, 64);
+
+        } else {
+            this._buff = sub;
+        }
+
+        return this;
+    };
+
+    /**
+     * Finishes the incremental computation, reseting the internal state and
+     * returning the result.
+     * Use the raw parameter to obtain the raw result instead of the hex one.
+     *
+     * @param {Boolean} raw True to get the raw result, false to get the hex result
+     *
+     * @return {String|Array} The result
+     */
+    SparkMD5.prototype.end = function (raw) {
+        var buff = this._buff,
+            length = buff.length,
+            tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            i,
+            ret;
+
+        for (i = 0; i < length; i += 1) {
+            tail[i >> 2] |= buff.charCodeAt(i) << ((i % 4) << 3);
+        }
+        tail[i >> 2] |= 0x80 << ((i % 4) << 3);
+        if (i > 55) {
+            md5cycle(this._state, tail);
+            for (i = 0; i < 16; i += 1) {
+                tail[i] = 0;
+            }
+        }
+        tail[14] = this._length * 8;
+        md5cycle(this._state, tail);
+
+        ret = !!raw ? this._state : hex(this._state);
+
+        this.reset();
+
+        return ret;
+    };
+
+    /**
+     * Resets the internal state of the computation.
+     *
+     * @return {SparkMD5} The instance itself
+     */
+    SparkMD5.prototype.reset = function () {
+        this._buff = "";
+        this._length = 0;
+        this._state = [1732584193, -271733879, -1732584194, 271733878];
+
+        return this;
+    };
+
+    /**
+     * Releases memory used by the incremental buffer and other aditional
+     * resources. If you plan to use the instance again, use reset instead.
+     */
+    SparkMD5.prototype.destroy = function () {
+        delete this._state;
+        delete this._buff;
+        delete this._length;
+    };
+
+    /**
+     * Performs the md5 hash on a string.
+     * A conversion will be applied if utf8 string is detected.
+     *
+     * @param {String}  str The string
+     * @param {Boolean} raw True to get the raw result, false to get the hex result
+     *
+     * @return {String|Array} The result
+     */
+    SparkMD5.hash = function (str, raw) {
         // converts the string to utf8 bytes if necessary
         if (/[\u0080-\uFFFF]/.test(str)) {
             str = unescape(encodeURIComponent(str));
@@ -459,16 +452,15 @@
         return !!raw ? hash : hex(hash);
     };
 
-    /*
-      * Performs the md5 hash on a binary string.
-      * 
-      * @param {String}  content The binary string
-      * @param {Boolean} raw     True to get the raw result, false to get the hex result
-      * 
-      * @return {String|Array} The result
-      */
+    /**
+     * Performs the md5 hash on a binary string.
+     *
+     * @param {String}  content The binary string
+     * @param {Boolean} raw     True to get the raw result, false to get the hex result
+     *
+     * @return {String|Array} The result
+     */
     SparkMD5.hashBinary = function (content, raw) {
-
         var hash = md51(content);
 
         return !!raw ? hash : hex(hash);
