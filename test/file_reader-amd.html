@@ -41,7 +41,7 @@
                 urlArgs : "bust="+ (+new Date)
             });
             
-            require(["spark-md5.amd"], function(SparkMD5) {
+            require(["spark-md5"], function(SparkMD5) {
                 
                 var blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice,
                     log = document.id("log"),
