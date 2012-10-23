@@ -13,7 +13,9 @@ Improvements over the JKM md5 library:
  * Functionality wrapped in a closure
  * Object oriented library
  * Incremental md5 (see bellow)
- * Validates using jslint
+ * CommonJS (it can be used in node) and AMD integration
+ * Validates using jshint
+
 
 Incremental md5 performs a lot better for hashing large ammounts of data, such as
 files. One could read files in chunks, using the FileReader & Blob's, and append
