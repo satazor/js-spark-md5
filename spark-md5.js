@@ -76,20 +76,19 @@
  *       loadNext();
  *   });
  *
- * @TODO: Add support for byteArrays.
- * @TODO: Add support for HMAC.
  * @TODO: Add native support for reading files? Maybe add it as an extension?
  */
 (function (factory) {
-	if (typeof exports === 'object') {
-		// Node/CommonJS
-		exports.SparkMD5 = factory();
-	} else if (typeof define === 'function' && define.amd) {
+    if (typeof exports === 'object') {
+        // Node/CommonJS
+        exports.SparkMD5 = factory();
+    } else if (typeof define === 'function' && define.amd) {
         // AMD
         define('spark-md5', factory);
     } else {
         // Browser globals
-        window.SparkMD5 = factory();
+        var glob = window || self;
+        glob.SparkMD5 = factory();
     }
 }(function (undefined) {
 
