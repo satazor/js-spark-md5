@@ -1,4 +1,4 @@
-/*jslint bitwise: true, nomen: true */
+/*jshint bitwise:false*/
 /*global unescape*/
 
 /**
@@ -81,7 +81,7 @@
 (function (factory) {
     if (typeof exports === 'object') {
         // Node/CommonJS
-        exports.SparkMD5 = factory();
+        module.exports.SparkMD5 = factory();
     } else if (typeof define === 'function' && define.amd) {
         // AMD
         define('spark-md5', factory);
@@ -98,7 +98,7 @@
     }
 }(function (undefined) {
 
-    "use strict";
+    'use strict';
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -271,8 +271,8 @@
         // Beware that the final length might not fit in 32 bits so we take care of that
         var tmp = n * 8;
         tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);
-        var lo = parseInt(tmp[2],16);
-        var hi = parseInt(tmp[1],16) || 0;
+        var lo = parseInt(tmp[2], 16);
+        var hi = parseInt(tmp[1], 16) || 0;
 
         tail[14] = lo;
         tail[15] = hi;
@@ -401,8 +401,8 @@
         // Beware that the final length may not fit in 32 bits so we take care of that
         var tmp = this._length * 8;
         tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);
-        var lo = parseInt(tmp[2],16);
-        var hi = parseInt(tmp[1],16) || 0;
+        var lo = parseInt(tmp[2], 16);
+        var hi = parseInt(tmp[1], 16) || 0;
 
         tail[14] = lo;
         tail[15] = hi;
