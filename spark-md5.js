@@ -86,8 +86,14 @@
         // AMD
         define('spark-md5', factory);
     } else {
-        // Browser globals
-        var glob = window || self;
+        // Browser globals (with support for web workers)
+        var glob;
+        try {
+            glob = window;
+        } catch (e) {
+            glob = self;
+        }
+
         glob.SparkMD5 = factory();
     }
 }(function (undefined) {
