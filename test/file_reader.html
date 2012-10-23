@@ -3,9 +3,9 @@
     <head>
         <title>SparkMD5 file reader test</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <script src="../spark-md5.js" type="text/javascript"></script>
-        <script src="http://ajax.googleapis.com/ajax/libs/mootools/1.4.5/mootools-yui-compressed.js" type="text/javascript"></script>
         <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css">
+        <script src="../spark-md5.js" type="text/javascript"></script>
+
         <style type="text/css" media="screen">
             .input-file {
                 padding: 5px;
@@ -15,7 +15,7 @@
     </head>
     <body class="container">
         <h1>SparkMD5 file reader test, incremental and normal md5</h1>
-        
+
         <h4>Please note that the advantage of doing an incremental md5 is to keep memory usage low.</h4>
         <p>
             Keep an eye on the memory usage of your browser. If you got chrome, open about:memory to see all the browsers memory usage (you must refresh continuously).
@@ -23,7 +23,7 @@
             <br/>With incremental md5, you should observe stable memory usage but slightly higher times.
             <br/>Be aware that while using normal md5, the browser can crash due to high memory usage.
         </p>
-        
+
         <div class="actions">
             <input type="file" id="file" class="input-file span5"/>
             <input type="button" id="normal" value="Normal" class="btn primary"/>
@@ -31,34 +31,37 @@
             <input type="button" id="clear" value="Clear" class="btn"/>
         </div>
         <div id="log"></div>
-        
+
         <script type="text/javascript">
-            
-            var blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice,
-                log = document.id("log"),
-                input = document.id("file"),
+
+            var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
+                log = document.getElementById("log"),
+                input = document.getElementById("file"),
                 running = false;
 
             function registerLog(str, className) {
-                var elem = new Element("div", { html: str, "class": "alert-message" }).inject(log);
-                if (className) elem.addClass(className);
+                var elem = document.createElement("div");
+                elem.innerHTML = str;
+                elem.className = "alert-message" + (className ? " "  + className : "");
+                log.appendChild(elem);
             }
 
             if (!("FileReader" in window) || !("File" in window) || !blobSlice) {
-                registerLog("<p><strong>Your browser does not support the FileAPI or slicing of files.</strong></p>", "error");		
+                registerLog("<p><strong>Your browser does not support the FileAPI or slicing of files.</strong></p>", "error");
             }
             else {
+                var ua = navigator.userAgent.toLowerCase();
 
-                if (Browser.chrome) {
-                    if ((location.protocol === "file:" || location.href.indexOf("://localhost") !== -1)) {
+                if (/chrome/.test(ua)) {
+                    if (location.protocol === "file:") {
                         registerLog("<p><strong>This example will only work in chrome (in file:// protocol) if you start it up with -allow-file-access-from-files argument.</strong><br/>This is a security measure introduced in chrome, please <a target=\"_blank\" href=\"http://code.google.com/p/chromium/issues/detail?id=60889\">see</a>.</p>");
                     }
                 }
-                else if (Browser.firefox) {
+                else if (/firefox/.test(ua)) {
                     var firebugEnabled = !!(window.console && (window.console.firebug || (console.exception && console.table && console.memoryProfile && console.memoryProfileEnd)));
                     if (firebugEnabled) registerLog("<p><strong>It seems you got firebug enabled.</strong><br/>Firebug slows down this script by a great margin and causes high memory/cpu usage, please disable it and use the built in web console instead.</p>");
                 }
-                else if (Browser.opera) {
+                else if (/opera/.test(ua)) {
                     registerLog("<p><strong>If you got DragonFly open please consider closing it as it slows down the test by a great margin.</strong></p>");
                 }
 
@@ -84,7 +87,7 @@
 
                         if (currentChunk == 0) registerLog("Read chunk number <strong id=\"" + uniqueId + "\">" + (currentChunk + 1) + "</strong> of <strong>" + chunks + "</strong><br/>", "info");
                         else {
-                            if (chunkId === null) chunkId = document.id(uniqueId);
+                            if (chunkId === null) chunkId = document.getElementById(uniqueId);
                             chunkId.innerHTML = currentChunk + 1;
                         }
 
@@ -156,15 +159,15 @@
                     time = new Date().getTime();
                     fileReader.readAsBinaryString(file);
                 }
-                
+
                 function clearLog() {
                     log.getChildren().destroy();
                 }
             }
 
-            document.id("normal").addEvent("click", doNormalTest);
-            document.id("incremental").addEvent("click", doIncrementalTest);
-            document.id("clear").addEvent("click", clearLog);
+            document.getElementById("normal").addEventListener("click", doNormalTest);
+            document.getElementById("incremental").addEventListener("click", doIncrementalTest);
+            document.getElementById("clear").addEventListener("click", clearLog);
         </script>
     </body>
 </html>

@@ -33,7 +33,7 @@ Incremental usage:
     spark.append(' there');
     var hexHash = spark.end();                    // hex hash
     var rawHash = spark.end(true);                // OR raw hash
-   
+
 Hash a file incrementally:
 ========================
 
@@ -43,7 +43,7 @@ Hash a file incrementally:
     document.getElementById("file").addEventListener("change", function() {
 
         var fileReader = new FileReader(),
-            blobSlice = File.prototype.mozSlice || File.prototype.webkitSlice || File.prototype.slice,
+            blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
             file = document.getElementById("file").files[0],
             chunkSize = 2097152,                           // read in chunks of 2MB
             chunks = Math.ceil(file.size / chunkSize),

@@ -262,7 +262,16 @@
                 tail[i] = 0;
             }
         }
-        tail[14] = n * 8;
+
+        // Beware that the final length might not fit in 32 bits so we take care of that
+        var tmp = n * 8;
+        tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);
+        var lo = parseInt(tmp[2],16);
+        var hi = parseInt(tmp[1],16) || 0;
+
+        tail[14] = lo;
+        tail[15] = hi;
+
         md5cycle(state, tail);
         return state;
     }
@@ -343,32 +352,15 @@
      * @return {SparkMD5} The instance itself
      */
     SparkMD5.prototype.appendBinary = function (contents) {
-        // add to the buffer and increment string total length
-        var offset = 64 - this._buff.length,
-            sub = this._buff + contents.substr(0, offset),
-            length = contents.length,
-            total;
+        this._buff += contents;
+        this._length += contents.length;
 
-        this._length += length;
-
-        if (sub.length >= 64) { // if there is 64 bytes accumulated
-
-            md5cycle(this._state, md5blk(sub));
-
-            total = contents.length - 64;
-
-            // while we got bytes to process
-            while (offset <= total) {
-                sub = contents.substr(offset, 64);
-                md5cycle(this._state, md5blk(sub));
-                offset += 64;
-            }
-
-            this._buff = contents.substr(offset, 64);
-
-        } else {
-            this._buff = sub;
+        var length = this._buff.length;
+        for (var i = 64; i <= length; i += 64) {
+            md5cycle(this._state, md5blk(this._buff.substring(i - 64, i)));
         }
+
+        this._buff = this._buff.substr(i - 64);
 
         return this;
     };
@@ -399,7 +391,16 @@
                 tail[i] = 0;
             }
         }
-        tail[14] = this._length * 8;
+
+        // Do the final computation based on the tail and length
+        // Beware that the final length may not fit in 32 bits so we take care of that
+        var tmp = this._length * 8;
+        tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);
+        var lo = parseInt(tmp[2],16);
+        var hi = parseInt(tmp[1],16) || 0;
+
+        tail[14] = lo;
+        tail[15] = hi;
         md5cycle(this._state, tail);
 
         ret = !!raw ? this._state : hex(this._state);
