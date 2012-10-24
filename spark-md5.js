@@ -81,7 +81,7 @@
 (function (factory) {
     if (typeof exports === 'object') {
         // Node/CommonJS
-        module.exports.SparkMD5 = factory();
+        module.exports = factory();
     } else if (typeof define === 'function' && define.amd) {
         // AMD
         define('spark-md5', factory);
