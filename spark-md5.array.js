@@ -467,9 +467,9 @@
     };
 
     /**
-     * Performs the md5 hash on a binary string.
+     * Performs the md5 hash on a typed array.
      *
-     * @param {ArrayBuffer}  content The binary string
+     * @param {ArrayBuffer}  content The binary array
      * @param {Boolean} raw     True to get the raw result, false to get the hex result
      *
      * @return {String|Array} The result
