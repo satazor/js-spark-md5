@@ -147,6 +147,6 @@ Hashes an array buffer directly, returning the hex result.
 If `raw` is true, the raw result will be returned instead.
 Note that this function is `static`.
 
-# Credits
+## Credits
 
 Joseph Myers (http://www.myersdaily.org/joseph/javascript/md5-text.html)
