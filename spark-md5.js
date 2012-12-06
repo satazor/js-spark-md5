@@ -235,11 +235,22 @@
        * providing access to strings as preformed UTF-8
        * 8-bit unsigned value arrays.
        */
-    function md5blk(s) { /* I figured global was faster.   */
+    function md5blk(s) {
         var md5blks = [],
             i; /* Andy King said do it this way. */
+
         for (i = 0; i < 64; i += 4) {
             md5blks[i >> 2] = s.charCodeAt(i) + (s.charCodeAt(i + 1) << 8) + (s.charCodeAt(i + 2) << 16) + (s.charCodeAt(i + 3) << 24);
+        }
+        return md5blks;
+    }
+
+    function md5blk_array(s) {
+        var md5blks = [],
+            i; /* Andy King said do it this way. */
+
+        for (i = 0; i < 64; i += 4) {
+            md5blks[i >> 2] = s[i] + (s[i + 1] << 8) + (s[i + 2] << 16) + (s[i + 3] << 24);
         }
         return md5blks;
     }
@@ -281,6 +292,54 @@
         tail[15] = hi;
 
         md5cycle(state, tail);
+        return state;
+    }
+
+    function md51_array(s) {
+        var n = s.length,
+            state = [1732584193, -271733879, -1732584194, 271733878],
+            i,
+            length,
+            tail,
+            tmp,
+            lo,
+            hi;
+
+        for (i = 64; i <= n; i += 64) {
+            md5cycle(state, md5blk_array(s.subarray(i - 64, i)));
+        }
+
+        // Not sure if it is a bug, however IE10 will always produce a sub array of length 1
+        // containing the last element of the parent array if the sub array specified starts
+        // beyond the length of the parent array - weird.
+        // https://connect.microsoft.com/IE/feedback/details/771452/typed-array-subarray-issue
+        s = (i - 64) < n ? s.subarray(i - 64) : new Uint8Array(0);
+
+        length = s.length;
+        tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for (i = 0; i < length; i += 1) {
+            tail[i >> 2] |= s[i] << ((i % 4) << 3);
+        }
+
+        tail[i >> 2] |= 0x80 << ((i % 4) << 3);
+        if (i > 55) {
+            md5cycle(state, tail);
+            for (i = 0; i < 16; i += 1) {
+                tail[i] = 0;
+            }
+        }
+
+        // Beware that the final length might not fit in 32 bits so we take care of that
+        tmp = n * 8;
+        tmp = tmp.toString(16).match(/(.*?)(.{0,8})$/);
+        lo = parseInt(tmp[2], 16);
+        hi = parseInt(tmp[1], 16) || 0;
+
+        tail[14] = lo;
+        tail[15] = hi;
+
+        md5cycle(state, tail);
+
         return state;
     }
 
@@ -384,16 +443,34 @@
     SparkMD5.prototype.end = function (raw) {
         var buff = this._buff,
             length = buff.length,
-            tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             i,
-            ret,
-            tmp,
-            lo,
-            hi;
+            tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            ret;
 
         for (i = 0; i < length; i += 1) {
             tail[i >> 2] |= buff.charCodeAt(i) << ((i % 4) << 3);
         }
+
+        this._finish(tail, length);
+        ret = !!raw ? this._state : hex(this._state);
+
+        this.reset();
+
+        return ret;
+    };
+
+    /**
+     * Finish the final calculation based on the tail.
+     *
+     * @param {Array}  tail   The tail (will be modified)
+     * @param {Number} length The length of the remaining buffer
+     */
+    SparkMD5.prototype._finish = function (tail, length) {
+        var i = length,
+            tmp,
+            lo,
+            hi;
+
         tail[i >> 2] |= 0x80 << ((i % 4) << 3);
         if (i > 55) {
             md5cycle(this._state, tail);
@@ -412,12 +489,6 @@
         tail[14] = lo;
         tail[15] = hi;
         md5cycle(this._state, tail);
-
-        ret = !!raw ? this._state : hex(this._state);
-
-        this.reset();
-
-        return ret;
     };
 
     /**
@@ -442,6 +513,7 @@
         delete this._buff;
         delete this._length;
     };
+
 
     /**
      * Performs the md5 hash on a string.
@@ -473,6 +545,123 @@
      */
     SparkMD5.hashBinary = function (content, raw) {
         var hash = md51(content);
+
+        return !!raw ? hash : hex(hash);
+    };
+
+    /**
+     * SparkMD5 OOP implementation for array buffers.
+     *
+     * Use this class to perform an incremental md5 ONLY for array buffers.
+     */
+    SparkMD5.ArrayBuffer = function () {
+        // call reset to init the instance
+        this.reset();
+    };
+
+    /**
+     * Appends an array buffer.
+     *
+     * @param {ArrayBuffer} arr The array to be appended
+     *
+     * @return {SparkMD5.ArrayBuffer} The instance itself
+     */
+    SparkMD5.ArrayBuffer.prototype.append = function (arr) {
+        // TODO: we could avoid the concatenation here but the algorithm would be more complex
+        //       if you find yourself needing extra performance, please make a PR.
+        var buff = this._concatArrayBuffer(this._buff, arr),
+            length = buff.length,
+            i;
+
+        this._length += arr.byteLength;
+
+        for (i = 64; i <= length; i += 64) {
+            md5cycle(this._state, md5blk_array(buff.subarray(i - 64, i)));
+        }
+
+        // Avoids IE10 weirdness (documented above)
+        this._buff = (i - 64) < length ? buff.subarray(i - 64) : new Uint8Array(0);
+
+        return this;
+    };
+
+    /**
+     * Finishes the incremental computation, reseting the internal state and
+     * returning the result.
+     * Use the raw parameter to obtain the raw result instead of the hex one.
+     *
+     * @param {Boolean} raw True to get the raw result, false to get the hex result
+     *
+     * @return {String|Array} The result
+     */
+    SparkMD5.ArrayBuffer.prototype.end = function (raw) {
+        var buff = this._buff,
+            length = buff.length,
+            tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            i,
+            ret;
+
+        for (i = 0; i < length; i += 1) {
+            tail[i >> 2] |= buff[i] << ((i % 4) << 3);
+        }
+
+        this._finish(tail, length);
+        ret = !!raw ? this._state : hex(this._state);
+
+        this.reset();
+
+        return ret;
+    };
+
+    SparkMD5.ArrayBuffer.prototype._finish = SparkMD5.prototype._finish;
+
+    /**
+     * Resets the internal state of the computation.
+     *
+     * @return {SparkMD5.ArrayBuffer} The instance itself
+     */
+    SparkMD5.ArrayBuffer.prototype.reset = function () {
+        this._buff = new Uint8Array(0);
+        this._length = 0;
+        this._state = [1732584193, -271733879, -1732584194, 271733878];
+
+        return this;
+    };
+
+    /**
+     * Releases memory used by the incremental buffer and other aditional
+     * resources. If you plan to use the instance again, use reset instead.
+     */
+    SparkMD5.ArrayBuffer.prototype.destroy = SparkMD5.prototype.destroy;
+
+    /**
+     * Concats two array buffers, returning a new one.
+     *
+     * @param  {ArrayBuffer} first  The first array buffer
+     * @param  {ArrayBuffer} second The second array buffer
+     *
+     * @return {ArrayBuffer} The new array buffer
+     */
+    SparkMD5.ArrayBuffer.prototype._concatArrayBuffer = function (first, second) {
+        var firstLength = first.length,
+            result = new Uint8Array(firstLength + second.byteLength);
+
+        result.set(first);
+        result.set(new Uint8Array(second), firstLength);
+
+        return result;
+    };
+
+    /**
+     * Performs the md5 hash on an array buffer.
+     *
+     * @param {ArrayBuffer} arr The array buffer
+     * @param {Boolean}     raw True to get the raw result, false to get the hex result
+     *
+     * @return {String|Array} The result
+     */
+    SparkMD5.ArrayBuffer.hash = function (arr, raw) {
+        var hash = md51_array(arr);
 
         return !!raw ? hash : hex(hash);
     };

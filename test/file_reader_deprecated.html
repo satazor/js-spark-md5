@@ -19,7 +19,7 @@
         <h4>Please note that the advantage of doing an incremental md5 is to keep memory usage low.</h4>
         <p>
             Keep an eye on the memory usage of your browser. If you got chrome, open about:memory to see all the browsers memory usage (you must refresh continuously).
-            <br/>With normal md5, you should observe slightly faster times but high memory usage (because the entire file need to be read into an array).
+            <br/>With normal md5, you should observe slightly faster times but high memory usage (because the entire file need to be read into a binary string).
             <br/>With incremental md5, you should observe stable memory usage but slightly higher times.
             <br/>Be aware that while using normal md5, the browser can crash due to high memory usage.
         </p>
@@ -78,7 +78,7 @@
                         chunkSize = 2097152,                           // read in chunks of 2MB
                         chunks = Math.ceil(file.size / chunkSize),
                         currentChunk = 0,
-                        spark = new SparkMD5.ArrayBuffer(),
+                        spark = new SparkMD5(),
                         time,
                         uniqueId = "chunk_" + (new Date().getTime()),
                         chunkId = null;
@@ -91,7 +91,7 @@
                             chunkId.innerHTML = currentChunk + 1;
                         }
 
-                        spark.append(e.target.result);                 // append array buffer
+                        spark.appendBinary(e.target.result);           // append binary string
                         currentChunk++;
 
                         if (currentChunk < chunks) {
@@ -114,7 +114,7 @@
                         var start = currentChunk * chunkSize,
                             end = start + chunkSize >= file.size ? file.size : start + chunkSize;
 
-                        fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+                        fileReader.readAsBinaryString(blobSlice.call(file, start, end));
                     };
 
                     running = true;
@@ -144,7 +144,7 @@
                         }
                         else {
                             registerLog("<strong>Finished loading!</strong><br/>", "success");
-                            registerLog("<strong>Computed hash:</strong> " + SparkMD5.ArrayBuffer.hash(e.target.result) + "<br/>", "success"); // compute hash
+                            registerLog("<strong>Computed hash:</strong> " + SparkMD5.hashBinary(e.target.result) + "<br/>", "success"); // compute hash
                             registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>", "success");
                         }
                     };
@@ -157,7 +157,7 @@
                     running = true;
                     registerLog("<strong>Starting normal test (" + file.name + ")</strong><br/>", "info");
                     time = new Date().getTime();
-                    fileReader.readAsArrayBuffer(file);
+                    fileReader.readAsBinaryString(file);
                 }
 
                 function clearLog() {
