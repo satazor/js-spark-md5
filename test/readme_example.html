@@ -10,7 +10,6 @@
         <script>
             function init() {
                 document.getElementById("file").addEventListener("change", function() {
-                        blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
                     var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
                         file = this.files[0],
                         chunkSize = 2097152,                               // read in chunks of 2MB
@@ -42,7 +41,7 @@
                         var start = currentChunk * chunkSize,
                             end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
 
-                        fileReader.readAsArrayBuffer(file.slice(start, end));
+                        fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
                     };
 
                     loadNext();

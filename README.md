@@ -80,7 +80,7 @@ document.getElementById("file").addEventListener("change", function() {
         var start = currentChunk * chunkSize,
             end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
 
-        fileReader.readAsArrayBuffer(file.slice(start, end));
+        fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
     };
 
     loadNext();

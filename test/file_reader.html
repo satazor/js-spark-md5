@@ -73,7 +73,8 @@
                         return;
                     }
 
-                    var file = input.files[0],
+                    var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
+                        file = input.files[0],
                         chunkSize = 2097152,                           // read in chunks of 2MB
                         chunks = Math.ceil(file.size / chunkSize),
                         currentChunk = 0,
@@ -117,7 +118,7 @@
                         var start = currentChunk * chunkSize,
                             end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
 
-                        fileReader.readAsArrayBuffer(file.slice(start, end));
+                        fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
                     };
 
                     running = true;
