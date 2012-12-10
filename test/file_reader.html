@@ -73,17 +73,16 @@
                         return;
                     }
 
-                    var fileReader = new FileReader(),
-                        file = input.files[0],
+                    var file = input.files[0],
                         chunkSize = 2097152,                           // read in chunks of 2MB
                         chunks = Math.ceil(file.size / chunkSize),
                         currentChunk = 0,
                         spark = new SparkMD5.ArrayBuffer(),
                         time,
                         uniqueId = "chunk_" + (new Date().getTime()),
-                        chunkId = null;
+                        chunkId = null,
 
-                    fileReader.onload = function(e) {
+                    frOnload = function(e) {
 
                         if (currentChunk == 0) registerLog("Read chunk number <strong id=\"" + uniqueId + "\">" + (currentChunk + 1) + "</strong> of <strong>" + chunks + "</strong><br/>", "info");
                         else {
@@ -91,8 +90,9 @@
                             chunkId.innerHTML = currentChunk + 1;
                         }
 
+						e.target.result.byteLength;
                         spark.append(e.target.result);                 // append array buffer
-                        currentChunk++;
+                        currentChunk += 1;
 
                         if (currentChunk < chunks) {
                             loadNext();
@@ -103,18 +103,22 @@
                             registerLog("<strong>Computed hash:</strong> " + spark.end() + "<br/>", "success"); // compute hash
                             registerLog("<strong>Total time:</strong> " + (new Date().getTime() - time) + "ms<br/>", "success");
                         }
-                    };
+                    },
 
-                    fileReader.onerror = function() {
+                   frOnerror = function() {
                         running = false;
                         registerLog("<strong>Oops, something went wrong.</strong>", "error");
-                    };
+                   },
 
-                    function loadNext() {
+                    loadNext = function() {
+                    	var fileReader = new FileReader();
+                    	fileReader.onload = frOnload;
+                    	fileReader.onerror = frOnerror;
+                    	
                         var start = currentChunk * chunkSize,
-                            end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+                            end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
 
-                        fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+                        fileReader.readAsArrayBuffer(file.slice(start, end));
                     };
 
                     running = true;
