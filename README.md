@@ -44,10 +44,10 @@ var rawHash = spark.end(true);                // OR raw hash
 
 ### Hash a file incrementally
 
-```js
 NOTE: If you test the code bellow using the file:// protocol in chrome you must start the browser with -allow-file-access-from-files argument.
       Please see: http://code.google.com/p/chromium/issues/detail?id=60889
 
+```js
 document.getElementById("file").addEventListener("change", function() {
     var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
         file = this.files[0],
