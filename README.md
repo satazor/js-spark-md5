@@ -49,8 +49,7 @@ NOTE: If you test the code bellow using the file:// protocol in chrome you must 
       Please see: http://code.google.com/p/chromium/issues/detail?id=60889
 
 document.getElementById("file").addEventListener("change", function() {
-    var fileReader = new FileReader(),
-        blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
+    var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
         file = this.files[0],
         chunkSize = 2097152,                               // read in chunks of 2MB
         chunks = Math.ceil(file.size / chunkSize),
