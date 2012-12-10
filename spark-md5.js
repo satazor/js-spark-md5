@@ -586,7 +586,7 @@
      * @return {String|Array} The result
      */
     SparkMD5.ArrayBuffer.hash = function (arr, raw) {
-        var hash = md51_array(arr);
+        var hash = md51_array(new Uint8Array(arr));
 
         return !!raw ? hash : hex(hash);
     };
