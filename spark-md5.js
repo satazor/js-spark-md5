@@ -42,28 +42,28 @@
         return (a + b) & 0xFFFFFFFF;
     },
 
-    cmn = function(q, a, b, x, s, t) {
+    cmn = function (q, a, b, x, s, t) {
         a = add32(add32(a, q), add32(x, t));
         return add32((a << s) | (a >>> (32 - s)), b);
     },
 
-    ff = function(a, b, c, d, x, s, t) {
+    ff = function (a, b, c, d, x, s, t) {
         return cmn((b & c) | ((~b) & d), a, b, x, s, t);
     },
 
-    gg = function(a, b, c, d, x, s, t) {
+    gg = function (a, b, c, d, x, s, t) {
         return cmn((b & d) | (c & (~d)), a, b, x, s, t);
     },
 
-    hh = function(a, b, c, d, x, s, t) {
+    hh = function (a, b, c, d, x, s, t) {
         return cmn(b ^ c ^ d, a, b, x, s, t);
     },
 
-    ii = function(a, b, c, d, x, s, t) {
+    ii = function (a, b, c, d, x, s, t) {
         return cmn(c ^ (b | (~d)), a, b, x, s, t);
     },
 
-    md5cycle = function(x, k) {
+    md5cycle = function (x, k) {
         var a = x[0],
             b = x[1],
             c = x[2],
@@ -158,7 +158,7 @@
        * providing access to strings as preformed UTF-8
        * 8-bit unsigned value arrays.
        */
-    md5blk = function(s) {
+    md5blk = function (s) {
         var md5blks = [],
             i; /* Andy King said do it this way. */
 
@@ -168,17 +168,17 @@
         return md5blks;
     },
 
-    md5blk_array = function(s) {
+    md5blk_array = function (a) {
         var md5blks = [],
             i; /* Andy King said do it this way. */
 
         for (i = 0; i < 64; i += 4) {
-            md5blks[i >> 2] = s[i] + (s[i + 1] << 8) + (s[i + 2] << 16) + (s[i + 3] << 24);
+            md5blks[i >> 2] = a[i] + (a[i + 1] << 8) + (a[i + 2] << 16) + (a[i + 3] << 24);
         }
         return md5blks;
     },
 
-    md51 = function(s) {
+    md51 = function (s) {
         var n = s.length,
             state = [1732584193, -271733879, -1732584194, 271733878],
             i,
@@ -218,8 +218,8 @@
         return state;
     },
 
-    md51_array = function(s) {
-        var n = s.length,
+    md51_array = function (a) {
+        var n = a.length,
             state = [1732584193, -271733879, -1732584194, 271733878],
             i,
             length,
@@ -229,19 +229,19 @@
             hi;
 
         for (i = 64; i <= n; i += 64) {
-            md5cycle(state, md5blk_array(s.subarray(i - 64, i)));
+            md5cycle(state, md5blk_array(a.subarray(i - 64, i)));
         }
 
         // Not sure if it is a bug, however IE10 will always produce a sub array of length 1
         // containing the last element of the parent array if the sub array specified starts
         // beyond the length of the parent array - weird.
         // https://connect.microsoft.com/IE/feedback/details/771452/typed-array-subarray-issue
-        s = (i - 64) < n ? s.subarray(i - 64) : new Uint8Array(0);
+        a = (i - 64) < n ? a.subarray(i - 64) : new Uint8Array(0);
 
-        length = s.length;
+        length = a.length;
         tail = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for (i = 0; i < length; i += 1) {
-            tail[i >> 2] |= s[i] << ((i % 4) << 3);
+            tail[i >> 2] |= a[i] << ((i % 4) << 3);
         }
 
         tail[i >> 2] |= 0x80 << ((i % 4) << 3);
@@ -268,7 +268,7 @@
 
     hex_chr = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'],
 
-    rhex = function(n) {
+    rhex = function (n) {
         var s = '',
             j;
         for (j = 0; j < 4; j += 1) {
@@ -277,7 +277,7 @@
         return s;
     },
 
-    hex = function(x) {
+    hex = function (x) {
         var i;
         for (i = 0; i < x.length; i += 1) {
             x[i] = rhex(x[i]);
@@ -285,12 +285,12 @@
         return x.join('');
     },
 
-    md5 = function(s) {
+    md5 = function (s) {
         return hex(md51(s));
     },
-    
-    
-    
+
+
+
     ////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -303,7 +303,7 @@
         // call reset to init the instance
         this.reset();
     };
-    
+
 
     // In some cases the fast add32 function cannot be used..
     if (md5('hello') !== '5d41402abc4b2a76b9719d911017c592') {
@@ -313,7 +313,7 @@
             return (msw << 16) | (lsw & 0xFFFF);
         };
     }
-    
+
 
     /**
      * Appends a string.

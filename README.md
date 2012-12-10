@@ -49,39 +49,46 @@ NOTE: If you test the code bellow using the file:// protocol in chrome you must 
       Please see: http://code.google.com/p/chromium/issues/detail?id=60889
 
 document.getElementById("file").addEventListener("change", function() {
-
     var fileReader = new FileReader(),
         blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
-        file = document.getElementById("file").files[0],
-        chunkSize = 2097152,                           // read in chunks of 2MB
+        file = this.files[0],
+        chunkSize = 2097152,                               // read in chunks of 2MB
         chunks = Math.ceil(file.size / chunkSize),
         currentChunk = 0,
-        spark = new SparkMD5.ArrayBuffer();
+        spark = new SparkMD5.ArrayBuffer(),
+        frOnload = function(e) {
+            console.log("read chunk nr", currentChunk + 1, "of", chunks);
+            spark.append(e.target.result);                 // append array buffer
+            currentChunk++;
 
-    fileReader.onload = function(e) {
-        console.log("read chunk nr", currentChunk + 1, "of", chunks);
-        spark.append(e.target.result);                 // append array buffer
-        currentChunk++;
-
-        if (currentChunk < chunks) {
-            loadNext();
-        }
-        else {
-           console.log("finished loading");
-           console.info("computed hash", spark.end()); // compute hash
-        }
-    };
+            if (currentChunk < chunks) {
+                loadNext();
+            }
+            else {
+               console.log("finished loading");
+               console.info("computed hash", spark.end()); // compute hash
+            }
+        },
+        frOnerror = function () {
+            console.warn('oops, something went wrong.');
+        };
 
     function loadNext() {
-        var start = currentChunk * chunkSize,
-            end = start + chunkSize >= file.size ? file.size : start + chunkSize;
+        var fileReader = new FileReader();
+        fileReader.onload = frOnload;
+        fileReader.onerror = frOnerror;
 
-        fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+        var start = currentChunk * chunkSize,
+            end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
+
+        fileReader.readAsArrayBuffer(file.slice(start, end));
     };
 
     loadNext();
 });
 ```
+
+You can some more examples in the test folder.
 
 ## Documentation
 

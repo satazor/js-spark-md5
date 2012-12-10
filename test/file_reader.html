@@ -90,7 +90,7 @@
                             chunkId.innerHTML = currentChunk + 1;
                         }
 
-						e.target.result.byteLength;
+                        e.target.result.byteLength;
                         spark.append(e.target.result);                 // append array buffer
                         currentChunk += 1;
 
@@ -111,10 +111,10 @@
                    },
 
                     loadNext = function() {
-                    	var fileReader = new FileReader();
-                    	fileReader.onload = frOnload;
-                    	fileReader.onerror = frOnerror;
-                    	
+                        var fileReader = new FileReader();
+                        fileReader.onload = frOnload;
+                        fileReader.onerror = frOnerror;
+
                         var start = currentChunk * chunkSize,
                             end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
 
