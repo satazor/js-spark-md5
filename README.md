@@ -69,7 +69,7 @@ document.getElementById("file").addEventListener("change", function() {
             }
         },
         frOnerror = function () {
-            console.warn('oops, something went wrong.');
+            console.warn("oops, something went wrong.");
         };
 
     function loadNext() {
