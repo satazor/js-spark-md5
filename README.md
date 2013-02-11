@@ -87,7 +87,7 @@ document.getElementById("file").addEventListener("change", function() {
 });
 ```
 
-You can some more examples in the test folder.
+You can see some more examples in the test folder.
 
 ## Documentation
 
