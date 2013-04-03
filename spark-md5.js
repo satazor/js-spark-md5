@@ -7,7 +7,7 @@
         module.exports = factory();
     } else if (typeof define === 'function' && define.amd) {
         // AMD
-        define('spark-md5', factory);
+        define(factory);
     } else {
         // Browser globals (with support for web workers)
         var glob;
