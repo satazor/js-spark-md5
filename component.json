@@ -1,0 +1,14 @@
+{
+  "name": "md5",
+  "repo": "satazor/SparkMD5",
+  "description": "Lightning fast normal and incremental md5 for javascript",
+  "version": "0.0.4",
+  "keywords": [],
+  "dependencies": {},
+  "development": {},
+  "license": "MIT",
+  "main": "spark-md5.js",
+  "scripts": [
+    "spark-md5.js"
+  ]
+}
