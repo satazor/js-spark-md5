@@ -1,5 +1,4 @@
 # SparkMD5
---------------
 
 SparkMD5 is a fast md5 implementation of the MD5 algorithm.
 This script is based in the JKM md5 library which is the
