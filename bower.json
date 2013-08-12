@@ -1,0 +1,24 @@
+{
+  "name": "SparkMD5",
+  "version": "0.0.4",
+  "homepage": "https://github.com/satazor/SparkMD5",
+  "authors": [
+    "André Cruz <andremiguelcruz@msn.com>"
+  ],
+  "description": "Lightning fast normal and incremental md5 for javascript",
+  "main": "spark-md5.js",
+  "keywords": [
+    "md5",
+    "spark",
+    "incremental",
+    "fast"
+  ],
+  "license": "http://www.wtfpl.net/",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
