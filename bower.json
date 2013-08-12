@@ -1,0 +1,7 @@
+{
+  "name": "SparkMD5",
+  "version": "0.0.4",
+  "main": "./spark-md5.js",
+  "dependencies": {
+  }
+}
