@@ -1,0 +1,25 @@
+{
+  "name": "spark-md5",
+  "version": "0.0.4",
+  "description": "Lightning fast normal and incremental md5 for javascript",
+  "main": "spark-md5.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:satazor/SparkMD5.git"
+  },
+  "keywords": [
+    "md5",
+    "fast",
+    "spark",
+    "incremental"
+  ],
+  "author": "André Cruz <andremiguelcruz@msn.com>",
+  "license": "WTFPL",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/satazor/SparkMD5/issues"
+  }
+}
