@@ -1,19 +1,16 @@
 {
   "name": "SparkMD5",
-  "version": "0.0.5",
-  "homepage": "https://github.com/satazor/SparkMD5",
+  "version": "0.0.4",
   "authors": [
     "André Cruz <andremiguelcruz@msn.com>"
   ],
   "description": "Lightning fast normal and incremental md5 for javascript",
   "main": "spark-md5.js",
   "keywords": [
-    "md5",
-    "spark",
-    "incremental",
-    "fast"
+    "md5 spark incremental"
   ],
-  "license": "http://www.wtfpl.net/",
+  "license": "DWTFYW",
+  "homepage": "http://github.com/satazor/SparkMD5",
   "ignore": [
     "**/.*",
     "node_modules",
