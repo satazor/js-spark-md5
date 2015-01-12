@@ -155,9 +155,7 @@ test('Hashing a PNG - ArrayBuffer vs binary string', function () {
     }
 
     // 1x1 transparent PNG
-    binString = atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAA' +
-                     'BCAQAAAC1HAwCAAAAC0lEQVQYV2NgYA' +
-                     'AAAAMAAWgmWQ0AAAAASUVORK5CYII=');
+    binString = atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=');
     buffer = binaryStringToArrayBuffer(binString);
 
     buffHasher = new SparkMD5.ArrayBuffer();
