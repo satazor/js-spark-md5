@@ -3,7 +3,7 @@
   "version": "0.0.5",
   "homepage": "https://github.com/satazor/SparkMD5",
   "authors": [
-    "André Cruz <andremiguelcruz@msn.com>"
+    "André Cruz <andremiguelcruz@msn.com>"
   ],
   "description": "Lightning fast normal and incremental md5 for javascript",
   "main": "spark-md5.js",

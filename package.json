@@ -16,10 +16,15 @@
     "spark",
     "incremental"
   ],
-  "author": "André Cruz <andremiguelcruz@msn.com>",
+  "author": "André Cruz <andremiguelcruz@msn.com>",
   "license": "WTFPL",
-  "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/satazor/SparkMD5/issues"
+  },
+  "scripts": {
+    "min": "uglifyjs spark-md5.js > spark-md5.min.js"
+  },
+  "devDependencies": {
+    "uglify-js": "^2.4.16"
   }
 }

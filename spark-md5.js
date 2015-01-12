@@ -1,6 +1,3 @@
-/*jshint bitwise:false*/
-/*global unescape*/
-
 (function (factory) {
     if (typeof exports === 'object') {
         // Node/CommonJS
@@ -11,6 +8,7 @@
     } else {
         // Browser globals (with support for web workers)
         var glob;
+
         try {
             glob = window;
         } catch (e) {
@@ -424,7 +422,7 @@
      * @return {SparkMD5} The instance itself
      */
     SparkMD5.prototype.reset = function () {
-        this._buff = "";
+        this._buff = '';
         this._length = 0;
         this._state = [1732584193, -271733879, -1732584194, 271733878];
 

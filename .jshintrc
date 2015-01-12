@@ -1,30 +1,32 @@
 {
     "predef": [
         "console",
-        "module",
         "define",
-        "self"
+        "self",
+        "unescape",
+        "module"
     ],
 
     "browser": true,
     "devel": true,
 
     "bitwise": false,
-    "curly": false,
+    "curly": true,
     "eqeqeq": false,
     "forin": false,
     "immed": true,
-    "latedef": true,
+    "latedef": false,
     "newcap": true,
     "noarg": true,
     "noempty": false,
     "nonew": true,
     "plusplus": false,
-    "regexp": false,
+    "regexp": true,
     "undef": true,
+    "unused": true,
+    "quotmark": "single",
     "strict": false,
     "trailing": true,
-    "unused": true,
 
     "asi": false,
     "boss": false,
@@ -33,15 +35,15 @@
     "es5": false,
     "esnext": false,
     "evil": false,
-    "expr": false,
+    "expr": true,
     "funcscope": false,
     "globalstrict": false,
     "iterator": false,
     "lastsemic": false,
     "laxbreak": false,
     "laxcomma": false,
-    "loopfunc": false,
-    "multistr": false,
+    "loopfunc": true,
+    "multistr": true,
     "onecase": true,
     "regexdash": false,
     "scripturl": false,
@@ -53,7 +55,5 @@
 
     "nomen": false,
     "onevar": false,
-    "white": true,
-
-    "mootools": true
+    "white": true
 }
