@@ -135,3 +135,35 @@ test("UTF-8", function () {
     hasher.appendBinary(str);
     equal(hasher.end(), "24e3399be06b7cf59dbd848e18d9246c", "Incremental (binary) of '" + str + "'");
 });
+
+test("Hashing a PNG - ArrayBuffer vs binary string", function () {
+  if (typeof window === 'undefined') {
+    equal('ok', 'ok');
+    return; // this test doesn't make sense in node, no ArrayBuffers
+  }
+  
+  function binaryStringToArrayBuffer(bin) {
+    var length = bin.length;
+    var buf = new ArrayBuffer(length);
+    var arr = new Uint8Array(buf);
+    for (var i = 0; i < length; i++) {
+      arr[i] = bin.charCodeAt(i);
+    }
+    return buf;
+  }
+  
+  // 1x1 transparent PNG
+  var binString = atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAA' +
+              'BCAQAAAC1HAwCAAAAC0lEQVQYV2NgYA' +
+              'AAAAMAAWgmWQ0AAAAASUVORK5CYII=');
+  var buffer = binaryStringToArrayBuffer(binString);
+  
+  var buffHasher = new SparkMD5.ArrayBuffer();
+  buffHasher.append(buffer);
+  
+  var binHasher = new SparkMD5();
+  binHasher.appendBinary(binString);
+  
+  equal(buffHasher.end(), binHasher.end(), 'md5 sum should be the same for both binary strings and ArrayBuffers');
+  
+});
