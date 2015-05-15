@@ -8,6 +8,8 @@ This is most suitable for browser usage, because `nodejs` version might be faste
 NOTE: Please disable Firebug while performing the test!
       Firebug consumes a lot of memory and CPU and slows the test by a great margin.
 
+## [Demo](http://9px.ir/demo/incremental-md5.html)
+
 ## Improvements over the JKM md5 library
 
  * Functionality wrapped in a closure
