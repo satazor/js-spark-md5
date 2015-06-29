@@ -22,7 +22,8 @@
     "url": "https://github.com/satazor/SparkMD5/issues"
   },
   "scripts": {
-    "min": "uglifyjs spark-md5.js > spark-md5.min.js"
+    "min": "uglifyjs spark-md5.js > spark-md5.min.js",
+    "test": "open test/index.html"
   },
   "devDependencies": {
     "uglify-js": "^2.4.16"

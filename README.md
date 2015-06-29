@@ -8,7 +8,9 @@ This is most suitable for browser usage, because `nodejs` version might be faste
 NOTE: Please disable Firebug while performing the test!
       Firebug consumes a lot of memory and CPU and slows the test by a great margin.
 
+
 ## [Demo](http://9px.ir/demo/incremental-md5.html)
+
 
 ## Improvements over the JKM md5 library
 
@@ -23,6 +25,7 @@ NOTE: Please disable Firebug while performing the test!
 Incremental md5 performs a lot better for hashing large ammounts of data, such as
 files. One could read files in chunks, using the FileReader & Blob's, and append
 each chunk for md5 hashing while keeping memory usage low. See example bellow.
+
 
 ## Usage
 
@@ -153,6 +156,7 @@ Releases memory used by the incremental buffer and other aditional resources.
 Hashes an array buffer directly, returning the hex result.
 If `raw` is true, the raw result will be returned instead.
 Note that this function is `static`.
+
 
 ## Credits
 
