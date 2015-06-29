@@ -342,7 +342,7 @@
             i;
 
         for (i = 64; i <= length; i += 64) {
-            md5cycle(this._checksum, md5blk(this._buff.substring(i - 64, i)));
+            md5cycle(this._hash, md5blk(this._buff.substring(i - 64, i)));
         }
 
         this._buff = this._buff.substr(i - 64);
@@ -371,7 +371,7 @@
         }
 
         this._finish(tail, length);
-        ret = !!raw ? this._checksum : hex(this._checksum);
+        ret = !!raw ? this._hash : hex(this._hash);
 
         this.reset();
 
@@ -386,7 +386,7 @@
     SparkMD5.prototype.reset = function () {
         this._buff = '';
         this._length = 0;
-        this._checksum = [1732584193, -271733879, -1732584194, 271733878];
+        this._hash = [1732584193, -271733879, -1732584194, 271733878];
 
         return this;
     };
@@ -400,7 +400,7 @@
         return {
             buff: this._buff,
             length: this._length,
-            checksum: this._checksum
+            hash: this._hash
         };
     };
 
@@ -414,7 +414,7 @@
     SparkMD5.prototype.setState = function (state) {
         this._buff = state.buff;
         this._length = state.length;
-        this._checksum = state.checksum;
+        this._hash = state.hash;
     };
 
     /**
@@ -422,7 +422,7 @@
      * resources. If you plan to use the instance again, use reset instead.
      */
     SparkMD5.prototype.destroy = function () {
-        delete this._checksum;
+        delete this._hash;
         delete this._buff;
         delete this._length;
     };
@@ -441,7 +441,7 @@
 
         tail[i >> 2] |= 0x80 << ((i % 4) << 3);
         if (i > 55) {
-            md5cycle(this._checksum, tail);
+            md5cycle(this._hash, tail);
             for (i = 0; i < 16; i += 1) {
                 tail[i] = 0;
             }
@@ -456,7 +456,7 @@
 
         tail[14] = lo;
         tail[15] = hi;
-        md5cycle(this._checksum, tail);
+        md5cycle(this._hash, tail);
     };
 
     /**
@@ -522,7 +522,7 @@
         this._length += arr.byteLength;
 
         for (i = 64; i <= length; i += 64) {
-            md5cycle(this._checksum, md5blk_array(buff.subarray(i - 64, i)));
+            md5cycle(this._hash, md5blk_array(buff.subarray(i - 64, i)));
         }
 
         // Avoids IE10 weirdness (documented above)
@@ -552,7 +552,7 @@
         }
 
         this._finish(tail, length);
-        ret = !!raw ? this._checksum : hex(this._checksum);
+        ret = !!raw ? this._hash : hex(this._hash);
 
         this.reset();
 
@@ -567,7 +567,7 @@
     SparkMD5.ArrayBuffer.prototype.reset = function () {
         this._buff = new Uint8Array(0);
         this._length = 0;
-        this._checksum = [1732584193, -271733879, -1732584194, 271733878];
+        this._hash = [1732584193, -271733879, -1732584194, 271733878];
 
         return this;
     };
