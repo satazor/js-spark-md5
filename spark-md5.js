@@ -21,8 +21,6 @@
 
     'use strict';
 
-    ////////////////////////////////////////////////////////////////////////////
-
     /*
      * Fastest md5 implementation around (JKM md5)
      * Credits: Joseph Myers
@@ -285,23 +283,7 @@
 
     md5 = function (s) {
         return hex(md51(s));
-    },
-
-
-
-    ////////////////////////////////////////////////////////////////////////////
-
-    /**
-     * SparkMD5 OOP implementation.
-     *
-     * Use this class to perform an incremental md5, otherwise use the
-     * static methods instead.
-     */
-    SparkMD5 = function () {
-        // call reset to init the instance
-        this.reset();
     };
-
 
     // In some cases the fast add32 function cannot be used..
     if (md5('hello') !== '5d41402abc4b2a76b9719d911017c592') {
@@ -312,6 +294,18 @@
         };
     }
 
+    // ---------------------------------------------------
+
+    /**
+     * SparkMD5 OOP implementation.
+     *
+     * Use this class to perform an incremental md5, otherwise use the
+     * static methods instead.
+     */
+    function SparkMD5() {
+        // call reset to init the instance
+        this.reset();
+    }
 
     /**
      * Appends a string.
@@ -348,7 +342,7 @@
             i;
 
         for (i = 64; i <= length; i += 64) {
-            md5cycle(this._state, md5blk(this._buff.substring(i - 64, i)));
+            md5cycle(this._checksum, md5blk(this._buff.substring(i - 64, i)));
         }
 
         this._buff = this._buff.substr(i - 64);
@@ -377,11 +371,60 @@
         }
 
         this._finish(tail, length);
-        ret = !!raw ? this._state : hex(this._state);
+        ret = !!raw ? this._checksum : hex(this._checksum);
 
         this.reset();
 
         return ret;
+    };
+
+    /**
+     * Resets the internal state of the computation.
+     *
+     * @return {SparkMD5} The instance itself
+     */
+    SparkMD5.prototype.reset = function () {
+        this._buff = '';
+        this._length = 0;
+        this._checksum = [1732584193, -271733879, -1732584194, 271733878];
+
+        return this;
+    };
+
+    /**
+     * Gets the internal state of the computation.
+     *
+     * @return {Object} The state
+     */
+    SparkMD5.prototype.getState = function () {
+        return {
+            buff: this._buff,
+            length: this._length,
+            checksum: this._checksum
+        };
+    };
+
+    /**
+     * Gets the internal state of the computation.
+     *
+     * @param {Object} state The state
+     *
+     * @return {SparkMD5} The instance itself
+     */
+    SparkMD5.prototype.setState = function (state) {
+        this._buff = state.buff;
+        this._length = state.length;
+        this._checksum = state.checksum;
+    };
+
+    /**
+     * Releases memory used by the incremental buffer and other additional
+     * resources. If you plan to use the instance again, use reset instead.
+     */
+    SparkMD5.prototype.destroy = function () {
+        delete this._checksum;
+        delete this._buff;
+        delete this._length;
     };
 
     /**
@@ -398,7 +441,7 @@
 
         tail[i >> 2] |= 0x80 << ((i % 4) << 3);
         if (i > 55) {
-            md5cycle(this._state, tail);
+            md5cycle(this._checksum, tail);
             for (i = 0; i < 16; i += 1) {
                 tail[i] = 0;
             }
@@ -413,32 +456,8 @@
 
         tail[14] = lo;
         tail[15] = hi;
-        md5cycle(this._state, tail);
+        md5cycle(this._checksum, tail);
     };
-
-    /**
-     * Resets the internal state of the computation.
-     *
-     * @return {SparkMD5} The instance itself
-     */
-    SparkMD5.prototype.reset = function () {
-        this._buff = '';
-        this._length = 0;
-        this._state = [1732584193, -271733879, -1732584194, 271733878];
-
-        return this;
-    };
-
-    /**
-     * Releases memory used by the incremental buffer and other aditional
-     * resources. If you plan to use the instance again, use reset instead.
-     */
-    SparkMD5.prototype.destroy = function () {
-        delete this._state;
-        delete this._buff;
-        delete this._length;
-    };
-
 
     /**
      * Performs the md5 hash on a string.
@@ -474,6 +493,8 @@
         return !!raw ? hash : hex(hash);
     };
 
+    // ---------------------------------------------------
+
     /**
      * SparkMD5 OOP implementation for array buffers.
      *
@@ -483,8 +504,6 @@
         // call reset to init the instance
         this.reset();
     };
-
-    ////////////////////////////////////////////////////////////////////////////
 
     /**
      * Appends an array buffer.
@@ -503,7 +522,7 @@
         this._length += arr.byteLength;
 
         for (i = 64; i <= length; i += 64) {
-            md5cycle(this._state, md5blk_array(buff.subarray(i - 64, i)));
+            md5cycle(this._checksum, md5blk_array(buff.subarray(i - 64, i)));
         }
 
         // Avoids IE10 weirdness (documented above)
@@ -533,14 +552,12 @@
         }
 
         this._finish(tail, length);
-        ret = !!raw ? this._state : hex(this._state);
+        ret = !!raw ? this._checksum : hex(this._checksum);
 
         this.reset();
 
         return ret;
     };
-
-    SparkMD5.ArrayBuffer.prototype._finish = SparkMD5.prototype._finish;
 
     /**
      * Resets the internal state of the computation.
@@ -550,16 +567,16 @@
     SparkMD5.ArrayBuffer.prototype.reset = function () {
         this._buff = new Uint8Array(0);
         this._length = 0;
-        this._state = [1732584193, -271733879, -1732584194, 271733878];
+        this._checksum = [1732584193, -271733879, -1732584194, 271733878];
 
         return this;
     };
 
-    /**
-     * Releases memory used by the incremental buffer and other aditional
-     * resources. If you plan to use the instance again, use reset instead.
-     */
+    SparkMD5.ArrayBuffer.prototype.getState = SparkMD5.prototype.getState;
+    SparkMD5.ArrayBuffer.prototype.setState = SparkMD5.prototype.setState;
     SparkMD5.ArrayBuffer.prototype.destroy = SparkMD5.prototype.destroy;
+
+    SparkMD5.ArrayBuffer.prototype._finish = SparkMD5.prototype._finish;
 
     /**
      * Concats two array buffers, returning a new one.

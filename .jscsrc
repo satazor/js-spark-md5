@@ -1,0 +1,95 @@
+{
+    "disallowKeywordsOnNewLine": [
+        "else",
+        "catch"
+    ],
+    "disallowMixedSpacesAndTabs": true,
+    "disallowSpacesInCallExpression": true,
+    "disallowSpacesInFunctionDeclaration": {
+        "beforeOpeningRoundBrace": true
+    },
+    "disallowTrailingComma": true,
+    "disallowTrailingWhitespace": true,
+    "excludeFiles": [
+        "bower_components/**",
+        "node_modules/**"
+    ],
+    "fileExtensions": [
+        ".js",
+        "jscs"
+    ],
+    "requireCommaBeforeLineBreak": true,
+    "requireCurlyBraces": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "try",
+        "catch"
+    ],
+    "requireMultipleVarDecl": "onevar",
+    "requireSpaceAfterBinaryOperators": true,
+    "requireSpaceAfterKeywords": [
+        "if",
+        "else",
+        "for",
+        "while",
+        "do",
+        "switch",
+        "return",
+        "try",
+        "catch",
+        "function"
+    ],
+    "requireSpaceBeforeBinaryOperators": [
+        "=",
+        "+=",
+        "-=",
+        "*=",
+        "/=",
+        "%=",
+        "<<=",
+        ">>=",
+        ">>>=",
+        "&=",
+        "|=",
+        "^=",
+        "+=",
+        "+",
+        "-",
+        "*",
+        "/",
+        "%",
+        "<<",
+        ">>",
+        ">>>",
+        "&",
+        "|",
+        "^",
+        "&&",
+        "||",
+        "===",
+        "==",
+        ">=",
+        "<=",
+        "<",
+        ">",
+        "!=",
+        "!=="
+    ],
+    "requireSpaceBeforeBlockStatements": true,
+    "requireSpaceBeforeKeywords": [
+        "else"
+    ],
+    "requireSpaceBeforeObjectValues": true,
+    "requireSpacesInConditionalExpression": true,
+    "requireSpacesInFunctionExpression": {
+        "beforeOpeningCurlyBrace": true,
+        "beforeOpeningRoundBrace": true
+    },
+    "requireSpacesInsideObjectBrackets": "allButNested",
+    "validateIndentation": 4,
+    "validateParameterSeparator": ", ",
+    "validateQuoteMarks": "'"
+}
