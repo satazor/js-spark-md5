@@ -428,6 +428,8 @@
         this._buff = state.buff;
         this._length = state.length;
         this._hash = state.hash;
+
+        return this;
     };
 
     /**
@@ -578,6 +580,11 @@
         return this;
     };
 
+    /**
+     * Gets the internal state of the computation.
+     *
+     * @return {Object} The state
+     */
     SparkMD5.ArrayBuffer.prototype.getState = function () {
         var state = SparkMD5.prototype.getState.call(this);
 
@@ -587,11 +594,18 @@
         return state;
     };
 
+    /**
+     * Gets the internal state of the computation.
+     *
+     * @param {Object} state The state
+     *
+     * @return {SparkMD5.ArrayBuffer} The instance itself
+     */
     SparkMD5.ArrayBuffer.prototype.setState = function (state) {
         // Convert string to buffer
         state.buff = utf8Str2ArrayBuffer(state.buff, true);
 
-        SparkMD5.prototype.setState.call(this, state);
+        return SparkMD5.prototype.setState.call(this, state);
     };
 
     SparkMD5.ArrayBuffer.prototype.destroy = SparkMD5.prototype.destroy;
