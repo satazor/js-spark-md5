@@ -2,6 +2,19 @@
 
 var hasher = new SparkMD5();
 
+function stringToArrayBuffer(str) {
+    var length = str.length,
+       buff = new ArrayBuffer(length),
+       arr = new Uint8Array(buff),
+       i;
+
+    for (i = 0; i < length; i++) {
+        arr[i] = str.charCodeAt(i);
+    }
+
+    return buff;
+}
+
 test('Hash of "hello"', function () {
     var str = 'hello',
         hash = '5d41402abc4b2a76b9719d911017c592';
@@ -102,6 +115,73 @@ test('Incremental usage', function () {
     equal(hasher.end(), '45762198a57a35c8523915898fb8c68c', 'Incremental (binary) of 20+60+20');
 });
 
+test('Incremental usage (resume)', function () {
+    var md5,
+        state,
+        buffHasher = new SparkMD5.ArrayBuffer();
+
+    hasher.reset();
+    hasher.append('5d41402abc4b2a421456');
+    hasher.append('5d41402abc4b2a421456');
+    hasher.append('5d41402abc4b2a421456a234');
+    md5 = hasher.end();
+
+    hasher.reset();
+    hasher.append('5d41402abc4b2a421456');
+    state = hasher.getState();
+    hasher.reset();
+    hasher.setState(state);
+    hasher.append('5d41402abc4b2a421456');
+    hasher.append('5d41402abc4b2a421456a234');
+
+    equal(hasher.end(), md5, 'MD5 should be the same');
+    equal(md5, '014d4bbb02c66c98249114dc674a7187', 'Actual MD5 check');
+
+    // Same tests but for buffers
+    buffHasher.reset();
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456a234'));
+    md5 = buffHasher.end();
+
+    buffHasher.reset();
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456'));
+    state = buffHasher.getState();
+
+    buffHasher.reset();
+    buffHasher.setState(state);
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456a234'));
+
+    equal(buffHasher.end(), md5, 'MD5 should be the same');
+    equal(md5, '014d4bbb02c66c98249114dc674a7187', 'Actual MD5 check');
+});
+
+test('Incremental usage (array buffer + resume with JSON.stringify)', function () {
+    var md5,
+        state,
+        buffHasher = new SparkMD5.ArrayBuffer();
+
+    // Same tests but for buffers
+    buffHasher.reset();
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456a234'));
+    md5 = buffHasher.end();
+
+    buffHasher.reset();
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456'));
+    state = JSON.stringify(buffHasher.getState());
+
+    buffHasher.reset();
+    buffHasher.setState(JSON.parse(state));
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(stringToArrayBuffer('5d41402abc4b2a421456a234'));
+
+    equal(buffHasher.end(), md5, 'MD5 should be the same');
+    equal(md5, '014d4bbb02c66c98249114dc674a7187', 'Actual MD5 check');
+});
+
 test('UTF-8', function () {
     var str = 'räksmörgås';
 
@@ -141,22 +221,9 @@ test('Hashing a PNG - ArrayBuffer vs binary string', function () {
         return; // this test doesn't make sense in node, no ArrayBuffers
     }
 
-    function binaryStringToArrayBuffer(bin) {
-        var length = bin.length,
-           buf = new ArrayBuffer(length),
-           arr = new Uint8Array(buf),
-           i;
-
-        for (i = 0; i < length; i++) {
-          arr[i] = bin.charCodeAt(i);
-        }
-
-        return buf;
-    }
-
     // 1x1 transparent PNG
     binString = atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=');
-    buffer = binaryStringToArrayBuffer(binString);
+    buffer = stringToArrayBuffer(binString);
 
     buffHasher = new SparkMD5.ArrayBuffer();
     buffHasher.append(buffer);
