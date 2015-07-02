@@ -1,15 +1,13 @@
 # SparkMD5
 
 SparkMD5 is a fast md5 implementation of the MD5 algorithm.
-This script is based in the JKM md5 library which is the
-fastest algorithm around (see: http://jsperf.com/md5-shootout/7).
-This is most suitable for browser usage, because `nodejs` version might be faster.
+This script is based in the JKM md5 library which is the [fastest](http://jsperf.com/md5-shootout/7) algorithm around. This is most suitable for browser usage, because `nodejs` version might be faster.
 
 NOTE: Please disable Firebug while performing the test!
       Firebug consumes a lot of memory and CPU and slows the test by a great margin.
 
 
-*[Demo](http://9px.ir/demo/incremental-md5.html)*
+**[Demo](http://9px.ir/demo/incremental-md5.html)**
 
 
 ## Improvements over the JKM md5 library
@@ -177,4 +175,4 @@ Note that this function is `static`.
 
 ## Credits
 
-Joseph Myers (http://www.myersdaily.org/joseph/javascript/md5-text.html)
+[Joseph Myers](http://www.myersdaily.org/joseph/javascript/md5-text.html)
