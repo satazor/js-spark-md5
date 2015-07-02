@@ -69,7 +69,7 @@
                     chunkSize = 2097152,                           // read in chunks of 2MB
                     chunks = Math.ceil(file.size / chunkSize),
                     currentChunk = 0,
-                    spark = new SparkMD5.ArrayBuffer(),
+                    spark = new SparkMD5(),
                     time,
                     uniqueId = 'chunk_' + (new Date().getTime()),
                     chunkId = null,
@@ -86,7 +86,7 @@
                         chunkId.innerHTML = currentChunk + 1;
                     }
 
-                    spark.append(e.target.result);                 // append array buffer
+                    spark.appendBinary(e.target.result);                 // append array buffer
                     currentChunk += 1;
 
                     if (currentChunk < chunks) {
@@ -108,7 +108,7 @@
                     var start = currentChunk * chunkSize,
                         end = start + chunkSize >= file.size ? file.size : start + chunkSize;
 
-                    fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+                    fileReader.readAsBinaryString(blobSlice.call(file, start, end));
                 }
 
                 running = true;
@@ -134,11 +134,11 @@
                 fileReader.onload = function (e) {
                     running = false;
 
-                    if (file.size != e.target.result.byteLength) {
+                    if (file.size != e.target.result.length) {
                         registerLog('<strong>ERROR:</strong> Browser reported success but could not read the file until the end.<br/>', 'error');
                     } else {
                         registerLog('<strong>Finished loading!</strong><br/>', 'success');
-                        registerLog('<strong>Computed hash:</strong> ' + SparkMD5.ArrayBuffer.hash(e.target.result) + '<br/>', 'success'); // compute hash
+                        registerLog('<strong>Computed hash:</strong> ' + SparkMD5.hashBinary(e.target.result) + '<br/>', 'success'); // compute hash
                         registerLog('<strong>Total time:</strong> ' + (new Date().getTime() - time) + 'ms<br/>', 'success');
                     }
                 };
@@ -151,7 +151,7 @@
                 running = true;
                 registerLog('<strong>Starting normal test (' + file.name + ')</strong><br/>', 'info');
                 time = new Date().getTime();
-                fileReader.readAsArrayBuffer(file);
+                fileReader.readAsBinaryString(file);
             }
 
             function clearLog() {

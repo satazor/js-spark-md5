@@ -4,7 +4,9 @@
         "define",
         "self",
         "unescape",
-        "module"
+        "module",
+        "File",
+        "SparkMD5"
     ],
 
     "browser": true,
@@ -32,7 +34,7 @@
     "boss": false,
     "debug": false,
     "eqnull": true,
-    "es5": false,
+    "es5": true,
     "esnext": false,
     "evil": false,
     "expr": true,

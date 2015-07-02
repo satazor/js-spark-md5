@@ -1,4 +1,4 @@
-/*global SparkMD5, test, equal*/
+/*global test, equal*/
 
 var hasher = new SparkMD5();
 

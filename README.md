@@ -9,11 +9,12 @@ NOTE: Please disable Firebug while performing the test!
       Firebug consumes a lot of memory and CPU and slows the test by a great margin.
 
 
-## [Demo](http://9px.ir/demo/incremental-md5.html)
+*[Demo](http://9px.ir/demo/incremental-md5.html)*
 
 
 ## Improvements over the JKM md5 library
 
+ * Fix computation for large amounts of data (overflow)
  * Functionality wrapped in a closure
  * Object oriented library
  * Incremental md5 (see bellow)
@@ -52,40 +53,38 @@ NOTE: If you test the code bellow using the file:// protocol in chrome you must 
       Please see: http://code.google.com/p/chromium/issues/detail?id=60889
 
 ```js
-document.getElementById("file").addEventListener("change", function() {
+document.getElementById('file').addEventListener('change', function () {
     var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
         file = this.files[0],
-        chunkSize = 2097152,                               // read in chunks of 2MB
+        chunkSize = 2097152,                             // Read in chunks of 2MB
         chunks = Math.ceil(file.size / chunkSize),
         currentChunk = 0,
         spark = new SparkMD5.ArrayBuffer(),
-        frOnload = function(e) {
-            console.log("read chunk nr", currentChunk + 1, "of", chunks);
-            spark.append(e.target.result);                 // append array buffer
-            currentChunk++;
+        fileReader = new FileReader();
 
-            if (currentChunk < chunks) {
-                loadNext();
-            }
-            else {
-               console.log("finished loading");
-               console.info("computed hash", spark.end()); // compute hash
-            }
-        },
-        frOnerror = function () {
-            console.warn("oops, something went wrong.");
-        };
+    fileReader.onload = function (e) {
+        console.log('read chunk nr', currentChunk + 1, 'of', chunks);
+        spark.append(e.target.result);                   // Append array buffer
+        currentChunk++;
+
+        if (currentChunk < chunks) {
+            loadNext();
+        } else {
+            console.log('finished loading');
+            console.info('computed hash', spark.end());  // Compute hash
+        }
+    };
+
+    fileReader.onerror = function () {
+        console.warn('oops, something went wrong.');
+    };
 
     function loadNext() {
-        var fileReader = new FileReader();
-        fileReader.onload = frOnload;
-        fileReader.onerror = frOnerror;
-
         var start = currentChunk * chunkSize,
             end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
 
         fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
-    };
+    }
 
     loadNext();
 });
@@ -100,11 +99,11 @@ You can see some more examples in the test folder.
 
 #### SparkMD5#append(str)
 
-Appends a string, handling UTF8 automatically.
+Appends a string.
 
 #### SparkMD5#appendBinary(str)
 
-Appends a binary string.
+Appends a binary string (e.g.: string returned from the deprecated [readAsBinaryString](https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsBinaryString)).
 
 #### SparkMD5#end(raw)
 
@@ -115,9 +114,18 @@ If `raw` is true, the raw result will be returned instead.
 
 Resets the internal state of the computation.
 
+#### SparkMD5#getState()
+
+Returns an object representing the internal computation state.
+You can pass this state to setState(). This feature is useful to resume an incremental md5.
+
+#### SparkMD5#setState(state)
+
+Sets the internal computation state. See: getState().
+
 #### SparkMD5#destroy()
 
-Releases memory used by the incremental buffer and other aditional resources.
+Releases memory used by the incremental buffer and other additional resources.
 
 #### SparkMD5.hash(str, raw)
 
@@ -127,7 +135,7 @@ Note that this function is `static`.
 
 #### SparkMD5.hashBinary(str, raw)
 
-Hashes a binary string directly, returning the hex result.
+Hashes a binary string directly (e.g.: string returned from the deprecated [readAsBinaryString](https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsBinaryString)), returning the hex result.
 If `raw` is true, the raw result will be returned instead.
 Note that this function is `static`.
 
@@ -149,7 +157,16 @@ Resets the internal state of the computation.
 
 #### SparkMD5.ArrayBuffer#destroy()
 
-Releases memory used by the incremental buffer and other aditional resources.
+Releases memory used by the incremental buffer and other additional resources.
+
+#### SparkMD5.ArrayBuffer#getState()
+
+Returns an object representing the internal computation state.
+You can pass this state to setState(). This feature is useful to resume an incremental md5.
+
+#### SparkMD5.ArrayBuffer#setState(state)
+
+Sets the internal computation state. See: getState().
 
 #### SparkMD5.ArrayBuffer.hash(arr, raw)
 
