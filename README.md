@@ -12,16 +12,17 @@ NOTE: Please disable Firebug while performing the test!
 
 ## Improvements over the JKM md5 library
 
+ * Strings are converted to utf8, like most server side algorithms
  * Fix computation for large amounts of data (overflow)
- * Functionality wrapped in a closure
- * Object oriented library
  * Incremental md5 (see bellow)
  * Support for array buffers (typed arrays)
+ * Functionality wrapped in a closure, to avoid global assignments
+ * Object oriented library
  * CommonJS (it can be used in node) and AMD integration
- * Validates using jshint
+ * Code passed through JSHint and JSCS
 
 
-Incremental md5 performs a lot better for hashing large ammounts of data, such as
+Incremental md5 performs a lot better for hashing large amounts of data, such as
 files. One could read files in chunks, using the FileReader & Blob's, and append
 each chunk for md5 hashing while keeping memory usage low. See example bellow.
 
@@ -97,7 +98,7 @@ You can see some more examples in the test folder.
 
 #### SparkMD5#append(str)
 
-Appends a string.
+Appends a string, encoding it to UTF8 if necessary.
 
 #### SparkMD5#appendBinary(str)
 
