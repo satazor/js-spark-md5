@@ -32,8 +32,8 @@ each chunk for md5 hashing while keeping memory usage low. See example bellow.
 ### Normal usage
 
 ```js
-var hexHash = SparkMD5.hash('Hi there');       // hex hash
-var rawHash = SparkMD5.hash('Hi there', true); // OR raw hash
+var hexHash = SparkMD5.hash('Hi there');        // hex hash
+var rawHash = SparkMD5.hash('Hi there', true);  // OR raw hash
 ```
 
 ### Incremental usage
@@ -42,8 +42,8 @@ var rawHash = SparkMD5.hash('Hi there', true); // OR raw hash
 var spark = new SparkMD5();
 spark.append('Hi');
 spark.append(' there');
-var hexHash = spark.end();                    // hex hash
-var rawHash = spark.end(true);                // OR raw hash
+var hexHash = spark.end();                      // hex hash
+var rawHash = spark.end(true);                  // OR raw hash
 ```
 
 ### Hash a file incrementally

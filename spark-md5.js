@@ -358,7 +358,7 @@
             md5cycle(this._hash, md5blk(this._buff.substring(i - 64, i)));
         }
 
-        this._buff = this._buff.substr(i - 64);
+        this._buff = this._buff.substring(i - 64);
 
         return this;
     };
