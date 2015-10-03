@@ -33,7 +33,7 @@ each chunk for md5 hashing while keeping memory usage low. See example bellow.
 
 ```js
 var hexHash = SparkMD5.hash('Hi there');        // hex hash
-var rawHash = SparkMD5.hash('Hi there', true);  // OR raw hash
+var rawHash = SparkMD5.hash('Hi there', true);  // OR raw hash (binary string)
 ```
 
 ### Incremental usage
@@ -43,7 +43,7 @@ var spark = new SparkMD5();
 spark.append('Hi');
 spark.append(' there');
 var hexHash = spark.end();                      // hex hash
-var rawHash = spark.end(true);                  // OR raw hash
+var rawHash = spark.end(true);                  // OR raw hash (binary string)
 ```
 
 ### Hash a file incrementally
@@ -107,7 +107,7 @@ Appends a binary string (e.g.: string returned from the deprecated [readAsBinary
 #### SparkMD5#end(raw)
 
 Finishes the computation of the md5, returning the hex result.
-If `raw` is true, the raw result will be returned instead.
+If `raw` is true, the result as a binary string will be returned instead.
 
 #### SparkMD5#reset()
 
@@ -129,13 +129,13 @@ Releases memory used by the incremental buffer and other additional resources.
 #### SparkMD5.hash(str, raw)
 
 Hashes a string directly, returning the hex result.
-If `raw` is true, the raw result will be returned instead.
+If `raw` is true, the result as a binary string will be returned instead.
 Note that this function is `static`.
 
 #### SparkMD5.hashBinary(str, raw)
 
 Hashes a binary string directly (e.g.: string returned from the deprecated [readAsBinaryString](https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsBinaryString)), returning the hex result.
-If `raw` is true, the raw result will be returned instead.
+If `raw` is true, the result as a binary string will be returned instead.
 Note that this function is `static`.
 
 
@@ -148,7 +148,7 @@ Appends an array buffer.
 #### SparkMD5.ArrayBuffer#end(raw)
 
 Finishes the computation of the md5, returning the hex result.
-If `raw` is true, the raw result will be returned instead.
+If `raw` is true, the result as a binary string will be returned instead.
 
 #### SparkMD5.ArrayBuffer#reset()
 
@@ -170,7 +170,7 @@ Sets the internal computation state. See: getState().
 #### SparkMD5.ArrayBuffer.hash(arr, raw)
 
 Hashes an array buffer directly, returning the hex result.
-If `raw` is true, the raw result will be returned instead.
+If `raw` is true, the result as a binary string will be returned instead.
 Note that this function is `static`.
 
 

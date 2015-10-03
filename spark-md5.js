@@ -344,7 +344,7 @@
            arr = new Uint8Array(buff),
            i;
 
-        for (i = 0; i < length; i++) {
+        for (i = 0; i < length; i += 1) {
             arr[i] = str.charCodeAt(i);
         }
 
@@ -362,6 +362,18 @@
         result.set(new Uint8Array(second), first.byteLength);
 
         return returnUInt8Array ? result : result.buffer;
+    }
+
+    function hexToBinaryString(hex) {
+        var bytes = [],
+            length = hex.length,
+            x;
+
+        for (x = 0; x < length - 1; x += 2) {
+            bytes.push(parseInt(hex.substr(x, 2), 16));
+        }
+
+        return String.fromCharCode.apply(String, bytes);
     }
 
     // ---------------------------------------------------
@@ -420,11 +432,10 @@
     /**
      * Finishes the incremental computation, reseting the internal state and
      * returning the result.
-     * Use the raw parameter to obtain the raw result instead of the hex one.
      *
-     * @param {Boolean} raw True to get the raw result, false to get the hex result
+     * @param {Boolean} raw True to get the raw string, false to get the hex string
      *
-     * @return {String|Array} The result
+     * @return {String} The result
      */
     SparkMD5.prototype.end = function (raw) {
         var buff = this._buff,
@@ -438,7 +449,11 @@
         }
 
         this._finish(tail, length);
-        ret = !!raw ? this._hash : hex(this._hash);
+        ret = hex(this._hash);
+
+        if (raw) {
+            ret = hexToBinaryString(ret);
+        }
 
         this.reset();
 
@@ -533,9 +548,9 @@
      * A conversion will be applied if utf8 string is detected.
      *
      * @param {String}  str The string
-     * @param {Boolean} raw True to get the raw result, false to get the hex result
+     * @param {Boolean} raw True to get the raw string, false to get the hex string
      *
-     * @return {String|Array} The result
+     * @return {String} The result
      */
     SparkMD5.hash = function (str, raw) {
         // Converts the string to utf8 bytes if necessary
@@ -547,14 +562,15 @@
      * Performs the md5 hash on a binary string.
      *
      * @param {String}  content The binary string
-     * @param {Boolean} raw     True to get the raw result, false to get the hex result
+     * @param {Boolean} raw     True to get the raw string, false to get the hex string
      *
-     * @return {String|Array} The result
+     * @return {String} The result
      */
     SparkMD5.hashBinary = function (content, raw) {
-        var hash = md51(content);
+        var hash = md51(content),
+            ret = hex(hash);
 
-        return !!raw ? hash : hex(hash);
+        return raw ? hexToBinaryString(ret) : ret;
     };
 
     // ---------------------------------------------------
@@ -595,11 +611,10 @@
     /**
      * Finishes the incremental computation, reseting the internal state and
      * returning the result.
-     * Use the raw parameter to obtain the raw result instead of the hex one.
      *
-     * @param {Boolean} raw True to get the raw result, false to get the hex result
+     * @param {Boolean} raw True to get the raw string, false to get the hex string
      *
-     * @return {String|Array} The result
+     * @return {String} The result
      */
     SparkMD5.ArrayBuffer.prototype.end = function (raw) {
         var buff = this._buff,
@@ -613,7 +628,11 @@
         }
 
         this._finish(tail, length);
-        ret = !!raw ? this._hash : hex(this._hash);
+        ret = hex(this._hash);
+
+        if (raw) {
+            ret = hexToBinaryString(ret);
+        }
 
         this.reset();
 
@@ -669,14 +688,15 @@
      * Performs the md5 hash on an array buffer.
      *
      * @param {ArrayBuffer} arr The array buffer
-     * @param {Boolean}     raw True to get the raw result, false to get the hex result
+     * @param {Boolean}     raw True to get the raw string, false to get the hex one
      *
-     * @return {String|Array} The result
+     * @return {String} The result
      */
     SparkMD5.ArrayBuffer.hash = function (arr, raw) {
-        var hash = md51_array(new Uint8Array(arr));
+        var hash = md51_array(new Uint8Array(arr)),
+            ret = hex(hash);
 
-        return !!raw ? hash : hex(hash);
+        return raw ? hexToBinaryString(ret) : ret;
     };
 
     return SparkMD5;

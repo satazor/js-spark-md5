@@ -17,11 +17,26 @@ function stringToArrayBuffer(str) {
        arr = new Uint8Array(buff),
        i;
 
-    for (i = 0; i < length; i++) {
+    for (i = 0; i < length; i += 1) {
         arr[i] = str.charCodeAt(i);
     }
 
     return buff;
+}
+
+function binaryStringToHex(str) {
+    var hex = '',
+        ch,
+        i,
+        length = str.length;
+
+    for (i = 0; i < length; i += 1) {
+        ch = str.charCodeAt(i);
+        hex += (ch >> 4).toString(16);
+        hex += (ch & 0xF).toString(16);
+    }
+
+    return hex;
 }
 
 test('Hash of "hello"', function () {
@@ -40,6 +55,24 @@ test('Hash of "hello"', function () {
     buffHasher.reset();
     buffHasher.append(unicodeStringToArrayBuffer(str));
     equal(buffHasher.end(), hash, 'Incremental (array buffer)');
+});
+
+test('Hash of "hello" (raw)', function () {
+    var str = 'hello',
+        hash = '5d41402abc4b2a76b9719d911017c592';
+
+    equal(binaryStringToHex(SparkMD5.hash(str, true)), hash, 'SparkMD5.hash()');
+    equal(binaryStringToHex(SparkMD5.hashBinary(str, true)), hash, 'SparkMD5.hashBinary()');
+    equal(binaryStringToHex(SparkMD5.ArrayBuffer.hash(unicodeStringToArrayBuffer(str), true)), hash, 'SparkMD5.ArrayBuffer.hash()');
+
+    hasher.reset();
+    hasher.append(str);
+    equal(binaryStringToHex(hasher.end(true)), hash, 'Incremental (normal)');
+    hasher.appendBinary(str);
+    equal(binaryStringToHex(hasher.end(true)), hash, 'Incremental (binary)');
+    buffHasher.reset();
+    buffHasher.append(unicodeStringToArrayBuffer(str));
+    equal(binaryStringToHex(buffHasher.end(true)), hash, 'Incremental (array buffer)');
 });
 
 test('Hash of 64 bytes', function () {
