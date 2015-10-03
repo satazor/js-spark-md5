@@ -1,6 +1,6 @@
 {
   "name": "spark-md5",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Lightning fast normal and incremental md5 for javascript",
   "main": "spark-md5.js",
   "directories": {
