@@ -176,7 +176,7 @@ Note that this function is `static`.
 
 ## License
 
-The project is double licensed, being [WTF2](./LICENSE) the master license and [WTF2](./LICENSE2) the alternative license.
+The project is double licensed, being [WTF2](./LICENSE) the master license and [MIT](./LICENSE2) the alternative license.
 The reason to have two licenses is that some entities refuse to use the master license (WTF2) due to
 bad language. If that's also your case, you can choose the alternative license.
 
