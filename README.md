@@ -24,7 +24,7 @@ NOTE: Please disable Firebug while performing the test!
 
 Incremental md5 performs a lot better for hashing large amounts of data, such as
 files. One could read files in chunks, using the FileReader & Blob's, and append
-each chunk for md5 hashing while keeping memory usage low. See example bellow.
+each chunk for md5 hashing while keeping memory usage low. See example below.
 
 
 ## Usage
