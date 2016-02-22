@@ -4,7 +4,8 @@
   "description": "Lightning fast normal and incremental md5 for javascript",
   "main": "spark-md5.js",
   "files": [
-    "spark-md5.js"  
+    "spark-md5.js",
+    "spark-md5.min.js"
   ],
   "directories": {
     "test": "test"
