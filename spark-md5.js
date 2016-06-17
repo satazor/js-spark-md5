@@ -335,6 +335,10 @@
             str = unescape(encodeURIComponent(str));
         }
 
+        if (typeof str !== 'string') {
+            str = str.toString();
+        }
+
         return str;
     }
 
