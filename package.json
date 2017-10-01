@@ -30,6 +30,6 @@
     "test": "open test/index.html"
   },
   "devDependencies": {
-    "uglify-js": "^3.0.0"
+    "uglify-js": "^3.1.3"
   }
 }
