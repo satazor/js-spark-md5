@@ -9,6 +9,11 @@ NOTE: Please disable Firebug while performing the test!
 
 **[Demo](http://9px.ir/demo/incremental-md5.html)**
 
+## Install
+
+```sh
+npm install --save spark-md5
+```
 
 ## Improvements over the JKM md5 library
 
