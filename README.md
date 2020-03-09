@@ -19,7 +19,7 @@ npm install --save spark-md5
 
  * Strings are converted to utf8, like most server side algorithms
  * Fix computation for large amounts of data (overflow)
- * Incremental md5 (see bellow)
+ * Incremental md5 (see below)
  * Support for array buffers (typed arrays)
  * Functionality wrapped in a closure, to avoid global assignments
  * Object oriented library
