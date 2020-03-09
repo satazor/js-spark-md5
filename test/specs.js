@@ -244,6 +244,55 @@ test('Incremental usage (resume)', function () {
     equal(md5, 'c9db0e4d21ebbba7014bd62353b2135e', 'Actual MD5 check');
 });
 
+test('Incremental usage (rolling)', function () {
+    var md5,
+        state;
+
+    hasher.reset();
+    hasher.append('5d41402abc4b2a421456');
+    hasher.append('5d41402abc4b2a421456');
+    hasher.append('5d41402abc4b2a421456');
+    hasher.append('5d41402abc4b2a421456');
+    hasher.append('5d41402abc4b2a421456a234');
+    md5 = hasher.end();
+
+    hasher.reset();
+    hasher.append('5d41402abc4b2a421456');
+    state = hasher.getState();
+    hasher.end();
+    hasher.setState(state);
+    hasher.append('5d41402abc4b2a421456');
+    hasher.append('5d41402abc4b2a421456');
+    hasher.append('5d41402abc4b2a421456');
+    hasher.append('5d41402abc4b2a421456a234');
+
+    equal(hasher.end(), md5, 'MD5 should be the same');
+    equal(md5, 'c9db0e4d21ebbba7014bd62353b2135e', 'Actual MD5 check');
+
+    // Same tests but for buffers
+    buffHasher.reset();
+    buffHasher.append(unicodeStringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(unicodeStringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(unicodeStringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(unicodeStringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(unicodeStringToArrayBuffer('5d41402abc4b2a421456a234'));
+    md5 = buffHasher.end();
+
+    buffHasher.reset();
+    buffHasher.append(unicodeStringToArrayBuffer('5d41402abc4b2a421456'));
+    state = buffHasher.getState();
+
+    buffHasher.end();
+    buffHasher.setState(state);
+    buffHasher.append(unicodeStringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(unicodeStringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(unicodeStringToArrayBuffer('5d41402abc4b2a421456'));
+    buffHasher.append(unicodeStringToArrayBuffer('5d41402abc4b2a421456a234'));
+
+    equal(buffHasher.end(), md5, 'MD5 should be the same');
+    equal(md5, 'c9db0e4d21ebbba7014bd62353b2135e', 'Actual MD5 check');
+});
+
 test('Incremental usage (resume with JSON.stringify)', function () {
     var md5,
         state;
