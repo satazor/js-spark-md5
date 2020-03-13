@@ -53,44 +53,29 @@ var rawHash = spark.end(true);                  // OR raw hash (binary string)
 
 ### Hash a file incrementally
 
+If you want to calculate an MD5 hash of a file, it's recommended to read the
+file in chunks and calculate the hash incrementally. For reading a file in
+chunks you can use the [chunked-file-reader](https://www.npmjs.com/package/chunked-file-reader)
+package.
+
 NOTE: If you test the code bellow using the file:// protocol in chrome you must start the browser with -allow-file-access-from-files argument.
       Please see: http://code.google.com/p/chromium/issues/detail?id=60889
 
 ```js
 document.getElementById('file').addEventListener('change', function () {
-    var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice,
-        file = this.files[0],
-        chunkSize = 2097152,                             // Read in chunks of 2MB
-        chunks = Math.ceil(file.size / chunkSize),
-        currentChunk = 0,
-        spark = new SparkMD5.ArrayBuffer(),
-        fileReader = new FileReader();
+    var file   = this.files[0],
+        spark  = new SparkMD5.ArrayBuffer(),
+        reader = new ChunkedFileReader({ maxChunkSize: 2*1024*1024 }); // https://www.npmjs.com/package/chunked-file-reader
 
-    fileReader.onload = function (e) {
-        console.log('read chunk nr', currentChunk + 1, 'of', chunks);
-        spark.append(e.target.result);                   // Append array buffer
-        currentChunk++;
+    reader.subscribe('chunk', function (e) {
+        spark.append(e.chunk);
+    });
 
-        if (currentChunk < chunks) {
-            loadNext();
-        } else {
-            console.log('finished loading');
-            console.info('computed hash', spark.end());  // Compute hash
-        }
-    };
+    reader.subscribe('end', function (e) {
+        console.info('computed hash', spark.end());
+    });
 
-    fileReader.onerror = function () {
-        console.warn('oops, something went wrong.');
-    };
-
-    function loadNext() {
-        var start = currentChunk * chunkSize,
-            end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
-
-        fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
-    }
-
-    loadNext();
+    reader.readChunks(file);
 });
 ```
 
