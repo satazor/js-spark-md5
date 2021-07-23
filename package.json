@@ -21,7 +21,7 @@
     "incremental"
   ],
   "author": "André Cruz <andremiguelcruz@msn.com>",
-  "license": "WTFPL",
+  "license": "(WTFPL OR MIT)",
   "bugs": {
     "url": "https://github.com/satazor/js-spark-md5/issues"
   },
