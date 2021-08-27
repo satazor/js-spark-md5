@@ -621,6 +621,45 @@
         return raw ? hexToBinaryString(ret) : ret;
     };
 
+    
+    SparkMD5.hashFile = function(file, callback) {
+        var blobSlice = File.prototype.slice || File.prototype.mozSlice || File.prototype.webkitSlice;
+        var chunkSize = 2097152;
+        var chunks = Math.ceil(file.size / chunkSize);
+        var currentChunk = 0;
+        var spark = new SparkMD5.ArrayBuffer();
+    
+        var frOnload = function(e){
+          spark.append(e.target.result); // append array buffer
+          currentChunk++;
+          if (currentChunk < chunks){
+            loadNext();
+          }
+          else {
+            var md5Hash = spark.end();
+            file.md5Hash = md5Hash;
+            callback(file);
+          }
+        };
+    
+        var frOnerror = function () {
+          console.debug('something went wrong');
+        };
+    
+    
+        var loadNext = function() {
+          var fileReader = new FileReader();
+          fileReader.onload = frOnload;
+          fileReader.onerror = frOnerror;
+          var start = currentChunk * chunkSize;
+          var end = ((start + chunkSize) >= file.size) ? file.size : start + chunkSize;
+    
+          fileReader.readAsArrayBuffer(blobSlice.call(file, start, end));
+        };
+    
+        loadNext();
+    };
+        
     // ---------------------------------------------------
 
     /**
