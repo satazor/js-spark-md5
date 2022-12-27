@@ -379,10 +379,10 @@
      */
 
     function toUtf8(str) {
-        if (/[\u0080-\uFFFF]/.test(str)) {
-            str = unescape(encodeURIComponent(str));
+        const containsUnicodeChars = /[\u0080-\uFFFF]/.test(str)
+        if (containsUnicodeChars) {
+            str = decodeURIComponent(encodeURIComponent(str));
         }
-
         return str;
     }
 
