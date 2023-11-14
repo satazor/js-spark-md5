@@ -1,5 +1,7 @@
 /*global test, equal*/
 
+import SparkMD5 from '../spark-md5.js';
+
 var hasher = new SparkMD5(),
     buffHasher = new SparkMD5.ArrayBuffer();
 

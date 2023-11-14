@@ -1,4 +1,4 @@
-# SparkMD5
+# SparkMD5 (ESM)
 
 SparkMD5 is a fast md5 implementation of the MD5 algorithm.
 This script is based in the JKM md5 library which is the [fastest](http://jsperf.com/md5-shootout/7) algorithm around. This is most suitable for browser usage, because `nodejs` version might be faster.

@@ -34,7 +34,7 @@
     "boss": false,
     "debug": false,
     "eqnull": true,
-    "es5": true,
+    "esversion": 6,
     "esnext": false,
     "evil": false,
     "expr": true,
